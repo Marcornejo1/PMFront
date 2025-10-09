@@ -1,0 +1,15 @@
+name: pm_front_dev
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/dockerfile.dev # Ligamos el dockerfile personalizado para dev
+    ports:
+      - "5151:5151" # Mapea el puerto del contenedor al de tu máquina
+    volumes:
+      - ../:/app # Mapea el código fuente para obtener los archivos fuente y reflejar cambios en tiempo real
+      - /app/node_modules # No permitimos que pase los node modules porque se crearán dentro del contenedor
+    env_file:
+      - ../.env.development
+    environment:
+      CHOKIDAR_USEPOLLING: 'true' #Agregamos variable de entorno para detectar cambios en los archivos

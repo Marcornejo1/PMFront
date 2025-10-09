@@ -1,0 +1,9 @@
+name: pm_web
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/dockerfile.prod # Ligamos el dockerfile personalizado para producción
+    ports:
+      - "8080:80" # Mapea el puerto del contenedor al de tu máquina
+    restart: always

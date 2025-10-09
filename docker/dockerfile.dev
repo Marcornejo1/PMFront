@@ -1,0 +1,15 @@
+#Imagen de node como base
+FROM node:20
+
+#Creamos y redireccionamos el directorio de trabajo
+WORKDIR /app
+
+COPY package.json yarn.lock ./
+
+RUN yarn
+
+#Exponemos el puerto para la aplicacion
+EXPOSE 5151
+
+#Iniciamos la aplicacion
+CMD [ "yarn", "dev" ]
