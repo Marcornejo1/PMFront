@@ -1,0 +1,59 @@
+/* Configuraciones generales */
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  /*Declaración de variables*/
+  --colorPrimario: #185174;
+  --colorSecundario: #E3E625;
+  --blanco: #FFFFFF;
+  --negro: #000000;
+  --neutro: #F0F1F4;
+  --bordes: #DCDEE5;
+  --texto: #3A444A;
+  --textoSecundario: #959CB1;
+
+  background-color: var(--neutro);
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--neutro);
+}
+
+.mainFrame {
+  margin-left: 15rem;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+li {
+  list-style: none;
+}
+
+/* Configuraciones generales de las scrollbar */
+@supports (scrollbar-color: auto) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+
+  /* Configuraciones particulares*/
+  html {
+    scrollbar-color: var(--textoSecundario) transparent;
+  }
+}
+
+/* Configuraciones responsivas */
+@media (max-width: 1100px) {
+  .mainFrame {
+    margin-left: 5rem;
+  }
+}
