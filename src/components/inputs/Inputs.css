@@ -1,0 +1,242 @@
+textarea {
+    height: auto !important;
+    padding: 0.3rem 1rem !important;
+    resize: none;
+  }
+  
+  /* Configuraciones  de las scrollbar */
+  @supports (scrollbar-color: auto) {
+    textarea {
+      scrollbar-color: var(--textoSecundario) transparent;
+    }
+  }
+  
+  .field {
+    width: 75%;
+    height: 2.4rem;
+    padding: 0 1rem;
+  
+    background-color: var(--neutro);
+    color: var(--texto);
+    font-size: 1rem;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: start;
+  
+    border-radius: 0.5rem;
+    border: 0.125rem solid transparent;
+  
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+
+  /* Variante pequeña del input */
+  .field.small {
+    height: 2rem;
+    padding: 0 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  /* Estilos para inputs deshabilitados */
+  .field:disabled {
+    background-color: var(--neutro);
+    opacity: 0.6;
+    cursor: not-allowed;
+    border-color: transparent;
+  }
+
+  .field:disabled::placeholder {
+    color: var(--textoSecundario);
+  }
+  
+  .field:hover {
+    border: 0.125rem solid var(--textoSecundario);
+  }
+  
+  .field:focus {
+    outline: none;
+    border: 0.125rem solid var(--colorPrimario);
+  }
+  
+  .field::placeholder {
+    color: var(--texto);
+  }
+  
+  option {
+    color: var(--texto);
+  }
+  
+  option:disabled {
+    color: var(--textoSecundario);
+  }
+  
+  .inputRow {
+    width: 100%;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .inputLabel {
+    margin: 0;
+    flex-grow: 1;
+    height: 0px;
+    text-align: end;
+    pointer-events: none;
+  }
+  
+  /* CSS para multiple input */
+  .multipleInputDiv,
+  .openInputDiv {
+    width: 100%;
+  
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  
+    /* Se usa este padding left para tomar el tamaño exacto debido a que el icono mide 2 rem y se le resta el gap de 0.5rem */
+    padding-left: 1.5rem;
+  }
+  
+  .openInputDiv * {
+    margin: 0;
+  }
+  
+  .openBeneficiario {
+    padding-left: 2.5rem;
+  }
+  
+  .inputGroup {
+    flex-grow: 1;
+    margin: 0;
+  }
+
+  .inputGroupTable{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin: 0px;
+    border: solid black;
+    border-radius: 10px;
+    align-items: baseline;
+    
+  }
+  
+  .inputGroup p {
+    text-align: center;
+  }
+  
+  .multipleInputDiv>.inputRow {
+    margin: 0;
+  
+    /* Restamos el tamaño del icono y el gap para que quepa en la misma columna */
+    width: calc(100% - 2.5rem);
+  }
+  
+  .checkBoxRow,
+  .partidaCheckbox {
+    flex-wrap: nowrap;
+  }
+  
+  .checkBoxRow {
+    width: 100%;
+  
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /*Configuraciones para checkBox*/
+  .checkBoxDiv,
+  .partidaDiv {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .checkBoxLabel,
+  .partidaLabel {
+    flex-grow: unset;
+  }
+  
+  .field.CheckboxField,
+  .partidaCheckbox {
+    margin: 0;
+    width: 1.5rem;
+  }
+  
+  
+  
+  @media (max-width: 900px) {
+    .inputRow {
+      flex-direction: column;
+    }
+  
+    .field {
+      width: 100%;
+    }
+  
+    .multipleInputDiv,
+    .openInputDiv {
+      padding-left: 0;
+    }
+  
+    .dateInputRow {
+      flex-direction: column;
+    }
+  }
+  
+  .dateInputLabel {
+    width: 35%;
+    margin: 0;
+    flex-grow: 1;
+    text-align: end;
+    pointer-events: none;
+  }
+  
+  .dateInputRow {
+    width: 85%;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 1rem;
+  
+  }
+  
+  .react-datepicker-wrapper {
+    width: 100%;
+  }
+  
+  .react-datepicker__input-container input {
+    width: 100%;
+    height: 2.4rem;
+    padding: 0 1rem;
+  
+    background-color: var(--neutro);
+    color: var(--texto);
+    font-size: 1rem;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: start;
+  
+    border-radius: 0.5rem;
+    border: 0.125rem solid transparent;
+  
+    transition: border 0.15s;
+    cursor: pointer;
+  }
+  
+  .react-datepicker__input-container input:hover {
+    border: 0.125rem solid var(--textoSecundario);
+  }
+  
+  .react-datepicker__input-container input:focus {
+    outline: none;
+    border: 0.125rem solid var(--colorPrimario);
+  }
+  
+  .react-datepicker__input-container input::placeholder {
+    color: var(--texto);
+  }
