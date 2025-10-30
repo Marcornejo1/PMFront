@@ -1,3 +1,65 @@
-.btn{
-    
-}
+.btn {
+    cursor: pointer;
+    user-select: none;
+    font-size: 1rem;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5em;
+    width: 8rem;
+    height: 2.4rem;
+    border-radius: 0.5rem;
+  
+    border: none;
+  
+    transition: color 0.3s, background-color 0.3s;
+  }
+  
+  .btnPrimary {
+    color: var(--texto);
+    background-color: var(--colorSecundario);
+  }
+  
+  .btnPrimary:hover {
+    color: var(--blanco);
+    background-color: var(--textoSecundario);
+  }
+  
+  .btnSecondary {
+    color: var(--textoSecundario);
+    background-color: var(--blanco);
+    border: 0.125rem solid var(--colorPrimario);
+  }
+  
+  .btnSecondary:hover {
+    color: var(--blanco);
+    background-color: var(--colorPrimario);
+  }
+
+  .btnLong{
+    width: 45%;
+    color: var(--colorPrimario);
+    background-color: var(--colorSecundario);
+  }
+
+  .btnLong:hover {
+    color: var(--blanco);
+    background-color: var(--colorPrimario);
+  }
+  
+  /* Estilos de botones de acciones */
+  .actionButton {
+    font-size: 2rem;
+    color: var(--textoSecundario);
+  
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.15s;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .actionButton:hover {
+    color: var(--colorPrimario);
+  }
