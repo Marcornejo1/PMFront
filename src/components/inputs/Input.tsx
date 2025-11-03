@@ -1,4 +1,5 @@
 import { UseFormRegister, UseFormSetValue } from "react-hook-form"
+import './Inputs.css';
 
 //Se obtienen las Props del componente padre. Register permite hacer uso de react hook forms
 interface Props {
@@ -24,14 +25,35 @@ const Input = ({ type, name, text, min, max, maxLength, minLength, required, pat
   //funcion para desactivar el scroll en los inputs de tipo number
   const handleWheel = (event: React.WheelEvent<HTMLInputElement>) => {
     const target = event.currentTarget
-    if(event.currentTarget.type == "number")
+    if (event.currentTarget.type == "number")
       //La funcion blur quita el foco del input, desactivando el scroll
       target.blur();
   }
 
   return (
     <div className="inputRow">
-      
+      <label htmlFor={name} className="inputLabel">{text}</label>
+      <input
+        id={name}
+        type={type}
+        className="field"
+        min={min}
+        max={max}
+        maxLength={maxLength}
+        minLength={minLength}
+        //Se indica que los caracteres deben ser convertidos a mayusculas
+        pattern={pattern}
+        required={required}
+        autoComplete="off"
+        onWheel={handleWheel}
+        {...register(name, {
+          //Funcion que deja validar si esta colocada la propiedad toUpper para convertir a mayusculas
+          onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
+            if (toUpperValue)
+              toUpperValue.setValue(name, event.currentTarget.value.toUpperCase());
+          },
+        })}
+      />
     </div>
   )
 }
