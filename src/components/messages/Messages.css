@@ -1,0 +1,38 @@
+.messageButtonDiv {
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.messageButtonDiv>* {
+  margin: 0;
+}
+
+.messageIconDiv {
+  position: relative;
+  margin-bottom: 1.5rem;
+
+  color: var(--colorSecundario);
+  font-size: 7rem;
+}
+
+.iconBackground {
+  background-color: var(--colorPrimario);
+  width: 8rem;
+  height: 8rem;
+  border-radius: 50%;
+
+  top: -0.3rem;
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.warningBackground>* {
+  padding-bottom: 0.5rem;
+}
+
+.textDiv {
+  text-align: center;
+}
