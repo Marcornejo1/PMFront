@@ -18,31 +18,35 @@ interface FormData {
 
   // Mediciones Electricas
   //*Tension de entrada Fase-Fase
-  tensionFaseFase: string,
-  tensionFaseNeutro: string,
-  corrienteEntrada: string,
+  EnFFAB: string,
+  EnFFBC: string,
+  EnFFCA: string,
   //*Tension de entrada Fase-Neutro
-  tensionSalidaFaseFase: string,
-  tensionSalidaFaseNeutro: string,
-  corrienteSalida: string,
-   //*Tension de entrada Fase-Fase
-  frecuenciaEntrada: string,
-  frecuenciaSalida: string,
-  porcentajeCarga: string,
+  EnFNAN: string,
+  EnFNBN: string,
+  ENFNCN: string,
+  //*Corriente de entrada
+  CorrA: string,
+  CorrB: string,
+  CorrC: string,
+  //*Tension de salida Fase-Fase
+  SalFFAB: string,
+  SalFFBC: string,
+  SalFFCA: string,
+  //*Tension de salida Fase-Neutro
+  SalFNAN: string,
+  SalFNBN: string,
+  SalFNCN: string,
+  //*Corriente de salida
+  CorrSalidaA: string,
+  CorrSalidaB: string,
+  CorrSalidaC: string,
+  //*Datos separados
+  FrecEntr: string,
+  FrecSalid: string,
+  PorCarga: string,
 
-  // Observaciones y Evaluación
-  descripcionFalla: string;
-  causaRaiz: string;
-  accionCorrectiva: string;
-  accionPreventiva: string;
-  recomendaciones: string;
-  
-  // Datos de Control
-  tiempoReparacion: string;
-  costoRepuestos: string;
-  costoManoObra: string;
-  estadoFinal: string;
-  fechaProximaRevision: string;
+ 
 }
 
 const Reporte = () => {
