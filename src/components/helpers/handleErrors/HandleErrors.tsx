@@ -9,7 +9,7 @@ import MErrUnknown from "../../messages/error/MErrUnknown";
 import MA01 from "../../messages/warning/MA01";
 import MA02 from "../../messages/warning/MA02";
 import { isAxiosError } from "axios";
-import { useAuthContext } from "../../../context/AuthContext";
+//import { useAuthContext } from "../../../context/AuthContext";
 import MA03 from "../../messages/warning/MA03";
 
 //Las props contienen las acciones a realizar
@@ -29,7 +29,7 @@ const HandleErrors = ({ error, handleWarningError, handleFatalError }: Props) =>
   const [errorMessage, setErrorMessage] = useState("");
 
   //Obtener el logout del contexto por si hay error de logueo
-  const { logout } = useAuthContext();
+  //const { logout } = useAuthContext();
 
   //Hacemos uso del estado de modales para saber cual se va a mostrar en cada momento
   const [openModal, setOpenModal] = useState<"MErr01Warning" | "MErr02Warning" | "MErr01Fatal" | "MErr01FatalLogin" | "MErr02Fatal" | "MA01" | "MA02" | "MA03" | "MErrUnknown">();
@@ -123,8 +123,8 @@ const HandleErrors = ({ error, handleWarningError, handleFatalError }: Props) =>
         return <MErr02 handleAcceptMessage={handleWarningError} />
       case 'MErr01Fatal':
         return <MErr01 handleAcceptMessage={handleFatalError} errorMessage={errorMessage} />
-      case 'MErr01FatalLogin':
-        return <MErr01 handleAcceptMessage={() => { handleFatalError(); logout() }} errorMessage={errorMessage} />
+     // case 'MErr01FatalLogin':
+       // return <MErr01 handleAcceptMessage={() => { handleFatalError(); logout() }} errorMessage={errorMessage} />
       case 'MErr02Fatal':
         return <MErr02 handleAcceptMessage={handleFatalError} />
       case 'MErrUnknown':

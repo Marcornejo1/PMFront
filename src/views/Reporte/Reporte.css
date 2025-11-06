@@ -1,0 +1,71 @@
+/* Contenedor principal que simula un documento */
+.reporte-container {
+  min-height: 100vh;
+  background-color: var(--neutro);
+}
+
+form {
+  max-width: 210mm; /* Tamaño A4 */
+  margin: 0 auto;
+  background-color: var(--blanco);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+/* Secciones del formulario */
+.form-section {
+  margin-bottom: 2.5rem;
+  padding: 1.5rem;
+  background-color: var(--blanco);
+  border-radius: 4px;
+  position: relative;
+}
+
+.form-section::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background-color: var(--colorPrimario);
+}
+
+.form-section h3 {
+  margin-bottom: 1.5rem;
+  color: var(--colorPrimario);
+  font-weight: 600;
+  border-bottom: 2px solid var(--bordes);
+  padding-bottom: 0.5rem;
+  letter-spacing: 0.5px;
+}
+
+/* Grid de campos */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  background-color: var(--blanco);
+}
+
+/* Campos con textarea ocupan toda la fila */
+.form-grid .campo-texto-largo {
+  grid-column: 1 / -1;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+  form {
+    padding: 1.5rem;
+    background-color: var(--colorPrimario);
+  }
+
+  .form-section {
+    padding: 1rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    background-color: var(--colorSecundario);
+  }
+}
