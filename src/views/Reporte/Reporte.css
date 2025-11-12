@@ -2,70 +2,191 @@
 .reporte-container {
   min-height: 100vh;
   background-color: var(--neutro);
+  padding: 2rem 1rem;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 form {
   max-width: 210mm; /* Tamaño A4 */
   margin: 0 auto;
   background-color: var(--blanco);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
   position: relative;
+}
+
+/* Encabezado del documento */
+.form-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 3px solid var(--colorPrimario);
+}
+
+.form-header h1 {
+  margin: 0;
+  color: var(--colorPrimario);
+  font-size: 1.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* Secciones del formulario */
 .form-section {
-  margin-bottom: 2.5rem;
-  padding: 1.5rem;
-  background-color: var(--blanco);
-  border-radius: 4px;
+  margin-bottom: 2rem;
+  padding: 0;
+  background-color: transparent;
+  border: none;
   position: relative;
 }
 
-.form-section::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 4px;
-  background-color: var(--colorPrimario);
-}
-
 .form-section h3 {
-  margin-bottom: 1.5rem;
-  color: var(--colorPrimario);
-  font-weight: 600;
-  border-bottom: 2px solid var(--bordes);
-  padding-bottom: 0.5rem;
+  margin: 1.5rem 0 1rem 0;
+  padding: 0.8rem 0.5rem;
+  color: var(--blanco);
+  background-color: var(--colorPrimario);
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-transform: uppercase;
   letter-spacing: 0.5px;
+  border-radius: 2px;
 }
 
 /* Grid de campos */
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem 1.5rem;
+  margin-bottom: 1rem;
   background-color: var(--blanco);
+  padding: 0.5rem 0;
 }
 
-/* Campos con textarea ocupan toda la fila */
-.form-grid .campo-texto-largo {
+/* Campos full-width */
+.form-grid div:has(textarea) {
   grid-column: 1 / -1;
 }
 
-/* Responsive para móviles */
+/* Estilos de etiquetas */
+label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--texto);
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Estilos de inputs */
+input, textarea {
+  display: block;
+  width: 100% !important;
+  padding: 0.6rem 0.5rem !important;
+  border: 1px solid var(--bordes) !important;
+  border-radius: 2px !important;
+  background-color: #fafbfc !important;
+  color: var(--texto) !important;
+  font-family: Arial, sans-serif !important;
+  font-size: 0.9rem !important;
+  transition: all 0.2s ease !important;
+  box-sizing: border-box !important;
+}
+
+input:focus, textarea:focus {
+  border-color: var(--colorPrimario) !important;
+  background-color: var(--blanco) !important;
+  box-shadow: 0 0 0 3px rgba(24, 81, 116, 0.08) !important;
+  outline: none !important;
+}
+
+textarea {
+  min-height: 80px !important;
+  resize: vertical !important;
+}
+
+/* Botón de envío */
+form > button {
+  display: block;
+  width: auto;
+  margin: 2.5rem auto 0;
+  padding: 0.8rem 2.5rem;
+  background-color: var(--colorPrimario);
+  color: var(--blanco);
+  border: none;
+  border-radius: 2px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+form > button:hover {
+  background-color: var(--colorSecundario);
+  color: var(--negro);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(227, 230, 37, 0.2);
+}
+
+form > button:active {
+  transform: translateY(0);
+}
+
+/* Responsive para tablets y móviles */
 @media (max-width: 768px) {
-  form {
-    padding: 1.5rem;
-    background-color: var(--colorPrimario);
+  .reporte-container {
+    padding: 1rem 0.5rem;
   }
 
-  .form-section {
-    padding: 1rem;
+  form {
+    padding: 1.5rem;
+    margin: 0;
+    max-width: 100%;
+  }
+
+  .form-header h1 {
+    font-size: 1.4rem;
   }
 
   .form-grid {
     grid-template-columns: 1fr;
-    background-color: var(--colorSecundario);
+    gap: 0.8rem 0;
+  }
+}
+
+/* Mediciones: tabla de columnas verticales */
+.measurements-table {
+  display: grid;
+  grid-template-columns: 200px repeat(3, 1fr);
+  gap: 0.5rem 1rem;
+  align-items: center;
+  margin: 0.5rem 0 1rem 0;
+}
+
+.measure-row-label {
+  font-weight: 700;
+  color: var(--texto);
+  background: transparent;
+  padding: 0.6rem 0.5rem;
+}
+
+.measure-cell {
+  padding: 0.25rem 0.4rem;
+}
+
+/* Small screens: stack rows so each label is above its inputs */
+@media (max-width: 900px) {
+  .measurements-table {
+    grid-template-columns: 1fr;
+  }
+  .measure-row-label {
+    padding-top: 0.8rem;
+  }
+  .measure-cell {
+    padding: 0.25rem 0;
   }
 }

@@ -1,5 +1,4 @@
 import "./Reporte.css";
-import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Button from "../../components/buttons/Button";
 import Input from "../../components/inputs/Input";
@@ -50,9 +49,7 @@ interface FormData {
 }
 
 const Reporte = () => {
-  const navigate = useNavigate();
-
-  const { register, handleSubmit, getValues, setValue } = useForm<FormData>();
+  const { register, handleSubmit } = useForm<FormData>();
 
   //Estado para controlar la apertura de los mensajes
   const [openModal, setOpenModal] = useState<"form" | "warning" | "success" | "error" | "loading">("form");
@@ -72,54 +69,90 @@ const Reporte = () => {
       case 'form':
         return (
           <form onSubmit={handleSubmit(enviarForm)} autoComplete="off">
+            {/* Encabezado del documento */}
+            <div className="form-header">
+              <h1>Reporte de Mantenimiento</h1>
+            </div>
+
             {/* Información General */}
             <div className="form-section">
               <h3>Información General</h3>
               <div className="form-grid">
-                <Input type="text" name="numeroReporte" text="Número de Reporte" required={true} register={register} />
-                <Input type="date" name="fecha" text="Fecha" required={true} register={register} />
-                <Input type="text" name="area" text="Área" required={true} register={register} />
-                <Input type="text" name="ubicacion" text="Ubicación" required={true} register={register} />
-                <Input type="text" name="responsable" text="Responsable" required={true} register={register} />
-              </div>
-            </div>
-
-            {/* Detalles Técnicos */}
-            <div className="form-section">
-              <h3>Detalles Técnicos</h3>
-              <div className="form-grid">
-                <Input type="text" name="equipoId" text="ID del Equipo" required={true} register={register} />
+                <Input type="text" name="cliente" text="Cliente" required={true} register={register} />
+                <Input type="text" name="marca" text="Marca" required={true} register={register} />
+                <Input type="text" name="direccion" text="Dirección" required={true} register={register} />
                 <Input type="text" name="modelo" text="Modelo" required={true} register={register} />
-                <Input type="text" name="serie" text="Número de Serie" required={true} register={register} />
-                <Input type="number" name="horasOperacion" text="Horas de Operación" required={true} register={register} />
-                <Input type="text" name="sistemaAfectado" text="Sistema Afectado" required={true} register={register} />
-                <Input type="text" name="componenteAfectado" text="Componente Afectado" required={true} register={register} />
-                <Input type="text" name="tipoFalla" text="Tipo de Falla" required={true} register={register} />
-                <Input type="text" name="prioridad" text="Prioridad" required={true} register={register} />
+                <Input type="text" name="ciudad" text="Ciudad" required={true} register={register} />
+                <Input type="text" name="nSerie" text="Número de Serie" required={true} register={register} />
+                <Input type="text" name="encargado" text="Encargado/a" required={true} register={register} />
+                <Input type="text" name="tipo" text="Tipo de Servicio" required={true} register={register} />
               </div>
             </div>
 
-            {/* Observaciones y Evaluación */}
+            {/* Mediciones eléctricas en formato fila por sección (cada fila: 3 columnas) */}
             <div className="form-section">
-              <h3>Observaciones y Evaluación</h3>
-              <div className="form-grid">
-                <Input type="textarea" name="descripcionFalla" text="Descripción de la Falla" required={true} register={register} />
-                <Input type="textarea" name="causaRaiz" text="Causa Raíz" required={true} register={register} />
-                <Input type="textarea" name="accionCorrectiva" text="Acción Correctiva" required={true} register={register} />
-                <Input type="textarea" name="accionPreventiva" text="Acción Preventiva" required={true} register={register} />
-                <Input type="textarea" name="recomendaciones" text="Recomendaciones" required={false} register={register} />
+              <h3>Mediciones de Entrada</h3>
+              <div className="measurements-table">
+                {/* Row: Tensión Fase-Fase */}
+                <div className="measure-row-label">Tensión Fase-Fase (V)</div>
+                <div className="measure-cell"><Input type="number" name="EnFFAB" text="A-B" required={false} register={register} /></div>
+                <div className="measure-cell"><Input type="number" name="EnFFBC" text="B-C" required={false} register={register} /></div>
+                <div className="measure-cell"><Input type="number" name="EnFFCA" text="C-A" required={false} register={register} /></div>
+
+                {/* Row: Tensión Fase-Neutro */}
+                <div className="measure-row-label">Tensión Fase-Neutro (V)</div>
+                <div className="measure-cell"><Input type="number" name="EnFNAN" text="A-N" required={false} register={register} /></div>
+                <div className="measure-cell"><Input type="number" name="EnFNBN" text="B-N" required={false} register={register} /></div>
+                <div className="measure-cell"><Input type="number" name="ENFNCN" text="C-N" required={false} register={register} /></div>
+
+                {/* Row: Corriente de Entrada */}
+                <div className="measure-row-label">Corriente de Entrada (A)</div>
+                <div className="measure-cell"><Input type="number" name="CorrA" text="Fase A" required={false} register={register} /></div>
+                <div className="measure-cell"><Input type="number" name="CorrB" text="Fase B" required={false} register={register} /></div>
+                <div className="measure-cell"><Input type="number" name="CorrC" text="Fase C" required={false} register={register} /></div>
               </div>
             </div>
 
-            {/* Datos de Control */}
             <div className="form-section">
-              <h3>Datos de Control</h3>
+              <h3>Mediciones de Salida</h3>
+              <div className="measurements-table">
+                {/* Row: Tensión Salida Fase-Fase */}
+                <div className="measure-row-label">Tensión Salida Fase-Fase (V)</div>
+                <div className="measure-cell"><Input type="number" name="SalFFAB" text="A-B" required={false} register={register} /></div>
+                <div className="measure-cell"><Input type="number" name="SalFFBC" text="B-C" required={false} register={register} /></div>
+                <div className="measure-cell"><Input type="number" name="SalFFCA" text="C-A" required={false} register={register} /></div>
+
+                {/* Row: Tensión Salida Fase-Neutro */}
+                <div className="measure-row-label">Tensión Salida Fase-Neutro (V)</div>
+                <div className="measure-cell"><Input type="number" name="SalFNAN" text="A-N" required={false} register={register} /></div>
+                <div className="measure-cell"><Input type="number" name="SalFNBN" text="B-N" required={false} register={register} /></div>
+                <div className="measure-cell"><Input type="number" name="SalFNCN" text="C-N" required={false} register={register} /></div>
+
+                {/* Row: Corriente de Salida */}
+                <div className="measure-row-label">Corriente de Salida (A)</div>
+                <div className="measure-cell"><Input type="number" name="CorrSalidaA" text="Fase A" required={false} register={register} /></div>
+                <div className="measure-cell"><Input type="number" name="CorrSalidaB" text="Fase B" required={false} register={register} /></div>
+                <div className="measure-cell"><Input type="number" name="CorrSalidaC" text="Fase C" required={false} register={register} /></div>
+              </div>
+            </div>
+
+            {/* Corriente de Salida */}
+            <div className="form-section">
+              <h3>Corriente de Salida</h3>
               <div className="form-grid">
-                <Input type="number" name="tiempoReparacion" text="Tiempo de Reparación (horas)" required={true} register={register} />
-                <Input type="number" name="costoRepuestos" text="Costo de Repuestos" required={true} register={register} />
-                <Input type="number" name="costoManoObra" text="Costo de Mano de Obra" required={true} register={register} />
-                <Input type="text" name="estadoFinal" text="Estado Final" required={true} register={register} />
-                <Input type="date" name="fechaProximaRevision" text="Fecha Próxima Revisión" required={true} register={register} />
+                <Input type="number" name="CorrSalidaA" text="Fase A (A)" required={false} register={register} />
+                <Input type="number" name="CorrSalidaB" text="Fase B (A)" required={false} register={register} />
+                <Input type="number" name="CorrSalidaC" text="Fase C (A)" required={false} register={register} />
+              </div>
+            </div>
+
+            {/* Datos Separados */}
+            <div className="form-section">
+              <h3>Datos Adicionales</h3>
+              <div className="form-grid">
+                <Input type="number" name="FrecEntr" text="Frecuencia de Entrada (Hz)" required={false} register={register} />
+                <Input type="number" name="FrecSalid" text="Frecuencia de Salida (Hz)" required={false} register={register} />
+                <Input type="number" name="PorCarga" text="Porcentaje de Carga (%)" required={false} register={register} />
               </div>
             </div>
 
