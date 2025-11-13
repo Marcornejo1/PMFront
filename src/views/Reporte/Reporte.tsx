@@ -44,8 +44,14 @@ interface FormData {
   FrecEntr: string,
   FrecSalid: string,
   PorCarga: string,
+  TenBateria: string,
+  CorrBateria: string,
+  TempUPS: string,
+  ModeloBateria: string,
+  CantBaterias: string,
+  AñoFabricacionBaterias: string,
+  Observaciones: string,
 
- 
 }
 
 const Reporte = () => {
