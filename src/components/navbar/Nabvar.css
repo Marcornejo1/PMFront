@@ -1,0 +1,129 @@
+.navbar {
+  background-color: var(--blanco);
+  color: var(--texto);
+
+  position: fixed;
+  top: 0;
+  left: 15rem;
+  width: calc(100% - 15rem);
+  height: 5.5rem;
+  padding: 0 2rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border-bottom: 1px solid var(--bordes);
+  z-index: 1;
+}
+
+.navbar--fullwidth {
+  width: 100%;
+  left: 0;
+}
+
+.sidebarToggleButton {
+  background: transparent;
+  border: none;
+  color: var(--texto);
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-right: 1rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+}
+
+.sidebarToggleButton:hover {
+  background: rgba(0,0,0,0.04);
+}
+
+.profileButton {
+  font-size: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+
+  transition: color 0.3s;
+}
+
+/* Mantener el botón de perfil fijo en la esquina derecha, no se mueve al togglear el sidebar */
+.profileButton {
+  position: fixed;
+  top: 1.25rem; /* centra verticalmente dentro de la barra de 5.5rem */
+  right: 1.5rem;
+  z-index: 1200;
+}
+
+.profileButton:hover {
+  color: var(--textoSecundario);
+}
+
+/* Configuración del tooltip */
+.navbarTooltip {
+  background-color: var(--colorPrimario);
+  color: var(--blanco);
+
+  /* Tooltip ahora fijo para alinearse con el botón de perfil fijo */
+  position: fixed;
+  top: 4.8rem;
+  right: 1.5rem;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
+
+.tooltipTriangle {
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+
+  top: -0.5rem;
+  left: 8.2rem;
+
+  border-bottom: 1rem solid var(--colorPrimario);
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+}
+
+.tooltipContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.tooltipContent * {
+  margin-bottom: 1rem;
+}
+
+.tooltipContent>*:last-child {
+  margin: 0;
+}
+
+/* Configuraciones responsivas */
+
+@media (max-width: 1100px) {
+  .navbar {
+    left: 5rem;
+    width: calc(100% - 5rem);
+    padding: 0 1rem;
+  }
+
+  .tooltipTriangle {
+    left: 9.2rem;
+  }
+  .profileButton {
+    right: 1rem;
+    top: 1rem;
+  }
+}
+
+/* Transiciones para evitar saltos bruscos al togglear el sidebar */
+.navbar,
+.navbar--fullwidth {
+  transition: left 0.28s cubic-bezier(0.4,0,0.2,1), width 0.28s cubic-bezier(0.4,0,0.2,1);
+}

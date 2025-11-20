@@ -26,8 +26,30 @@ body {
   background-color: var(--neutro);
 }
 
+
 .mainFrame {
   margin-left: 15rem;
+  transition: margin-left 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+.sidebar--hidden ~ .mainFrame {
+  margin-left: 0;
+}
+
+.sidebar-toggle-btn {
+  background: var(--colorPrimario);
+  color: var(--blanco);
+  border: none;
+  border-radius: 0 4px 4px 0;
+  padding: 0.5rem 1rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: background 0.2s;
+}
+.sidebar-toggle-btn:hover {
+  background: var(--colorSecundario);
+  color: var(--colorPrimario);
 }
 
 .hidden {
