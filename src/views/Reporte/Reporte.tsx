@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import Button from "../../components/buttons/Button";
 import Input from "../../components/inputs/Input";
 import { useForm } from "react-hook-form";
+import InputTextArea from "../../components/inputs/InputTextArea";
+import InputImageUpload from "../../components/inputs/InputImageUpload";
 
 interface FormData {
   // Información General
@@ -14,6 +16,7 @@ interface FormData {
   modelo: string,
   nSerie: string,
   tipo: string,
+  referenciaImages: File[],
 
   // Mediciones Electricas
   //*Tension de entrada Fase-Fase
@@ -55,7 +58,7 @@ interface FormData {
 }
 
 const Reporte = () => {
-  const { register, handleSubmit } = useForm<FormData>();
+  const { register, handleSubmit, setValue } = useForm<FormData>();
 
   //Estado para controlar la apertura de los mensajes
   const [openModal, setOpenModal] = useState<"form" | "warning" | "success" | "error" | "loading">("form");
@@ -142,16 +145,6 @@ const Reporte = () => {
               </div>
             </div>
 
-            {/* Corriente de Salida */}
-            <div className="form-section">
-              <h3>Corriente de Salida</h3>
-              <div className="form-grid">
-                <Input type="number" name="CorrSalidaA" text="Fase A (A)" required={false} register={register} />
-                <Input type="number" name="CorrSalidaB" text="Fase B (A)" required={false} register={register} />
-                <Input type="number" name="CorrSalidaC" text="Fase C (A)" required={false} register={register} />
-              </div>
-            </div>
-
             {/* Datos Separados */}
             <div className="form-section">
               <h3>Datos Adicionales</h3>
@@ -159,7 +152,27 @@ const Reporte = () => {
                 <Input type="number" name="FrecEntr" text="Frecuencia de Entrada (Hz)" required={false} register={register} />
                 <Input type="number" name="FrecSalid" text="Frecuencia de Salida (Hz)" required={false} register={register} />
                 <Input type="number" name="PorCarga" text="Porcentaje de Carga (%)" required={false} register={register} />
+                <Input type="number" name="TenBateria" text="Tensión de la batería (V)" required={false} register={register} />
+                <Input type="number" name="CorrBateria" text="Corriente de la batería (A)" required={false} register={register} />
+                <Input type="text" name="ModeloBateria" text="Modelo de la batería" required={false} register={register} />
+                <Input type="number" name="CantBaterias" text="Cantidad de baterías" required={false} register={register} />
+                <Input type="number" name="AñoFabricacionBaterias" text="Año de fabricación de las baterías" required={false} register={register} />
+                <Input type="number" name="TempUPS" text="Temperatura UPS (°C)" required={false} register={register} />
               </div>
+            </div>
+
+            {/* Observaciones */}
+            <div className="form-section">
+              <h3>Observaciones</h3>
+              <div className="form-grid">
+                <InputTextArea name="Observaciones" text="Observaciones" required={false} register={register} />
+              </div>
+            </div>
+
+            {/*Imagenes de referencia*/}
+            <div className="form-section">
+              <h3>Imágenes de Referencia</h3>
+              <InputImageUpload name="referenciaImages" text="Fotos del Equipo" maxFiles={5} acceptedFormats="image/*" register={register} setValue={setValue} required={false} />
             </div>
 
             <Button btnType="submit" className="primary" text="Enviar Reporte" onClick={() => { }} />
