@@ -1,5 +1,6 @@
 import './Sidebar.css';
-
+import { Link } from 'react-router-dom';
+import { PiFileArchiveBold } from 'react-icons/pi';
 
 //Utilizamos react-router para navegar entre las páginas, aquí colocamos las rutas
 interface SidebarProps {
@@ -14,6 +15,7 @@ const Sidebar = ({ open }: SidebarProps) => {
       </div>
       <div className="sidebarLinks">
         {/* Links aquí */}
+        <Link to="/reporte"><i><PiFileArchiveBold /></i><span className='linkText'>Reportes</span></Link>
       </div>
     </div>
   );

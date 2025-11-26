@@ -1,8 +1,10 @@
+import './Dashboard.css';
+
 const Dashboard = () => {
     return (
-        <>
-            {/* Dashboard view placeholder */}
-        </>
+        <div className="dashboard">
+            <h1>Dashboard</h1>
+        </div>
     );
 };
 
