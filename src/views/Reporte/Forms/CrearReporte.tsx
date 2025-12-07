@@ -58,19 +58,48 @@ interface FormData {
 }
 
 const CrearReporte = () => {
-  const { register, handleSubmit, setValue } = useForm<FormData>();
+  const { register, handleSubmit, setValue, getValues } = useForm<FormData>();
 
   //Estado para controlar la apertura de los mensajes
   const [openModal, setOpenModal] = useState<"form" | "warning" | "success" | "error" | "loading">("form");
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   useEffect(() => {
     setOpenModal("form");
-  }, []);
+    // Cargar borrador del localStorage si existe
+    const borrador = localStorage.getItem('reporteBorrador');
+    if (borrador) {
+      const datos = JSON.parse(borrador);
+      Object.keys(datos).forEach((key) => {
+        setValue(key as keyof FormData, datos[key]);
+      });
+    }
+  }, [setValue]);
+
+  const guardarBorrador = () => {
+    setIsSaving(true);
+    const formData = getValues();
+    localStorage.setItem('reporteBorrador', JSON.stringify(formData));
+    
+    // Aquí podrías hacer un POST a tu API para guardar en BD
+    // await axios.post('/api/reportes/borrador', { ...formData, estado: 'Borrador' });
+    
+    setTimeout(() => {
+      setIsSaving(false);
+      alert('Borrador guardado exitosamente');
+    }, 500);
+  };
 
   const enviarForm = async (data: FormData) => {
-    //Lógica para enviar el formulario
-    console.log(data);
-  }
+    //Lógica para enviar el formulario como completado
+    console.log('Enviando reporte completado:', data);
+    
+    // Aquí harías el POST a tu API
+    // await axios.post('/api/reportes', { ...data, estado: 'Completado' });
+    
+    // Limpiar borrador del localStorage
+    localStorage.removeItem('reporteBorrador');
+  };
 
 
   const render = () => {
@@ -175,7 +204,22 @@ const CrearReporte = () => {
               <InputImageUpload name="referenciaImages" text="Fotos del Equipo" maxFiles={5} acceptedFormats="image/*" register={register} setValue={setValue} required={false} />
             </div>
 
-            <Button btnType="submit" className="primary" text="Enviar Reporte" onClick={() => { }} />
+            {/* Botones de acción */}
+            <div className="form-actions">
+              <Button 
+                btnType="button" 
+                className="secondary" 
+                text={isSaving ? "Guardando..." : "Guardar Borrador"} 
+                onClick={guardarBorrador}
+                disabled={isSaving}
+              />
+              <Button 
+                btnType="submit" 
+                className="primary" 
+                text="Enviar Reporte" 
+                onClick={() => { }} 
+              />
+            </div>
           </form>
         );
       case 'loading':
