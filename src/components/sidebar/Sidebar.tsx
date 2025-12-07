@@ -17,7 +17,6 @@ const Sidebar = ({ open }: SidebarProps) => {
         {/* Links aquí */}
         <Link to="/"><i><PiHouseBold /></i><span className='linkText'>Dashboard</span></Link>
         <Link to="/reporte"><i><PiFileArchiveBold /></i><span className='linkText'>Reportes</span></Link>
-        <Link to="/crear"><i><PiPlusCircleBold /></i><span className='linkText'>Crear Reporte</span></Link>
       </div>
     </div>
   );
