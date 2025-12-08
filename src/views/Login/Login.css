@@ -1,0 +1,33 @@
+.login {
+  background-color: var(--colorPrimario);
+
+  width: 100%;
+  height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loginForm {
+  background-color: var(--blanco);
+  text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  max-width: 500px;
+
+  padding: 2rem;
+  border-radius: 0.5rem;
+}
+
+.loginForm>* {
+  margin-bottom: 1rem;
+}
+
+.loginForm *:last-child {
+  margin-bottom: 0;
+}
