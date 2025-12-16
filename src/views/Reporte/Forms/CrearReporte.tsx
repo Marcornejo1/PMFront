@@ -5,6 +5,9 @@ import Input from "../../../components/inputs/Input";
 import { useForm } from "react-hook-form";
 import InputTextArea from "../../../components/inputs/InputTextArea";
 import InputImageUpload from "../../../components/inputs/InputImageUpload";
+import InputOptions from "../../../components/inputs/InputOptions";
+// Lista de tipos de servicio disponibles para selección rápida
+const tipoOptions = ["Preventivo", "Correctivo", "Emergencia", "Instalación", "Inspección"];
 
 interface FormData {
   // Información General
@@ -58,7 +61,8 @@ interface FormData {
 }
 
 const CrearReporte = () => {
-  const { register, handleSubmit, setValue, getValues } = useForm<FormData>();
+  const { register, handleSubmit, setValue, getValues, watch } = useForm<FormData>();
+  const watchTipo = watch("tipo");
 
   //Estado para controlar la apertura de los mensajes
   const [openModal, setOpenModal] = useState<"form" | "warning" | "success" | "error" | "loading">("form");
@@ -123,7 +127,15 @@ const CrearReporte = () => {
                 <Input type="text" name="ciudad" text="Ciudad" required={true} register={register} />
                 <Input type="text" name="nSerie" text="Número de Serie" required={true} register={register} />
                 <Input type="text" name="encargado" text="Encargado/a" required={true} register={register} />
-                <Input type="text" name="tipo" text="Tipo de Servicio" required={true} register={register} />
+                <InputOptions
+                  name="tipo"
+                  label="Tipo de Servicio"
+                  options={tipoOptions.map((t) => ({ value: t }))}
+                  register={register}
+                  setValue={setValue}
+                  value={watchTipo}
+                  required
+                />
               </div>
             </div>
 

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import Button from "../buttons/Button";
+import { useAuthContext } from "../../context/AuthContext";
 
 interface Props{
   closeTooltip: () => void;
@@ -10,7 +11,7 @@ const NavbarTooltip = ({ closeTooltip }: Props) => {
   const tooltipRef = useRef<any>(null);
 
   //Obtenemos el nombre de usuario del contexto
-  //const { authData, logout } = useAuthContext();
+  const { authData, logout } = useAuthContext();
 
   //Función para detectar cuando se hace clic fuera del tooltip y cerrarlo
   const handleClickOutside = (event: any) => {
@@ -31,8 +32,8 @@ const NavbarTooltip = ({ closeTooltip }: Props) => {
     <div ref={tooltipRef} className="navbarTooltip">
       <div className="tooltipTriangle"></div>
       <div className="tooltipContent">
-        <div>{/*authData.username*/}</div>
-        <Button btnType="button" className="primary" text="Cerrar sesión" onClick={() => {}} />
+        <div>{authData.username}</div>
+        <Button btnType="button" className="primary" text="Cerrar sesión" onClick={logout} />
       </div>
     </div >
   )

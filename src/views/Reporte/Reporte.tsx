@@ -113,7 +113,7 @@ const Reporte = () => {
         marca: "APC",
         modelo: "Smart-UPS 1500",
         nSerie: "AS2222222222",
-        tipo: "Preventivo",
+        tipo: "Instalación",
         estado: "Completado",
         fechaCreacion: "2025-11-25",
         fechaModificacion: "2025-11-25",
@@ -198,7 +198,9 @@ const Reporte = () => {
     { value: "Todos", label: "Todos" },
     { value: "Preventivo", label: "Preventivo" },
     { value: "Correctivo", label: "Correctivo" },
-    { value: "Emergencia", label: "Emergencia" }
+    { value: "Emergencia", label: "Emergencia" },
+    { value: "Instalación", label: "Instalación" },
+    { value: "Inspección", label: "Inspección" }
   ];
 
   return (

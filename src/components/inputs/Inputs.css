@@ -12,20 +12,27 @@ textarea {
   }
   
   .field {
-    width: 75%;
-    height: 2.4rem;
-    padding: 0 1rem;
+    width: 75% !important;
+    height: 2.4rem !important;
+    padding: 0 1rem !important;
   
-    background-color: var(--neutro);
-    color: var(--texto);
-    font-size: 1rem;
-    font-family: Arial, Helvetica, sans-serif;
-    text-align: start;
+    background-color: var(--neutro) !important;
+    color: var(--texto) !important;
+    font-size: 1rem !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    text-align: start !important;
   
-    border-radius: 0.5rem;
-    border: 0.125rem solid transparent;
+    border-radius: 0.5rem !important;
+    border: 0.125rem solid transparent !important;
   
-    transition: all 0.15s ease;
+    transition: all 0.15s ease !important;
+  }
+
+  input.field {
+    cursor: auto;
+  }
+
+  select.field {
     cursor: pointer;
   }
 
@@ -95,9 +102,9 @@ textarea {
     align-items: center;
     gap: 0.5rem;
   
-  /* Se usa este padding left para tomar el tamaño exacto debido a que el icono mide 2 rem y se le resta el gap de 0.5rem */
-  padding-left: 1.5rem;
-}
+    /* Se usa este padding left para tomar el tamaño exacto debido a que el icono mide 2 rem y se le resta el gap de 0.5rem */
+    padding-left: 1.5rem;
+  }
 
 /* Estilos para el componente de subida de imágenes */
 .imageUploadContainer {
@@ -205,7 +212,59 @@ textarea {
   -webkit-line-clamp: 2;
   line-clamp: 2;
   -webkit-box-orient: vertical;
-}  .openInputDiv * {
+}
+
+.tipo-selector {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  grid-column: 1 / -1;
+}
+
+.tipo-selector__label {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--texto);
+}
+
+.tipo-selector__options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.5rem;
+}
+
+.tipo-option {
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--bordes);
+  border-radius: 6px;
+  background: #fafbfc;
+  color: var(--texto);
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tipo-option:hover {
+  border-color: var(--colorPrimario);
+  color: var(--colorPrimario);
+  background: #f1f6fa;
+}
+
+.tipo-option.is-active {
+  border-color: var(--colorPrimario);
+  background: rgba(24, 81, 116, 0.1);
+  color: var(--colorPrimario);
+  box-shadow: 0 0 0 2px rgba(24, 81, 116, 0.08);
+}
+
+.openInputDiv * {
     margin: 0;
   }
   
