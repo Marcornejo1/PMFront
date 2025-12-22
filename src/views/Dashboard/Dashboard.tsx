@@ -1,8 +1,10 @@
 import './Dashboard.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PiFileArchiveBold, PiCheckCircleBold, PiClockBold, PiPlusBold, PiChartBarBold } from 'react-icons/pi';
 import Button from '../../components/buttons/Button';
+import { TitleContext } from '../../context/TitleContext';
+import useAxiosInstance from '../../functions/axiosInstance';
 
 interface ReporteReciente {
   id: number;
@@ -19,42 +21,53 @@ interface Borrador {
   porcentajeCompletado: number;
 }
 
+interface Stats {
+  totalReportes: number;
+  reportesCompletados: number;
+  reportesPendientes: number;
+  reportesMesActual: number;
+}
+
 const Dashboard = () => {
   const navigate = useNavigate();
+  // Usar use effect para mostrar el título cuando se monta el componente, esto evita que haya errores en consola
+  const context = useContext(TitleContext);
+  useEffect(() => {
+    context?.setTitle("Dashboard");
+  }, []);
+
+  //Importamos variables globales
+  const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
+  //Estado del control de errores
+  const [openError, setOpenError] = useState<boolean>(false);
+  const [error, setError] = useState<any>();
 
   // Estados para las estadísticas
-  const [stats, setStats] = useState({
-    totalReportes: 0,
-    reportesCompletados: 0,
-    reportesPendientes: 0,
-    reportesMesActual: 0
-  });
+  const [stats, setStats] = useState<Stats>({ totalReportes: 0, reportesCompletados: 0, reportesPendientes: 0, reportesMesActual: 0 });
 
   const [reportesRecientes, setReportesRecientes] = useState<ReporteReciente[]>([]);
   const [borradores, setBorradores] = useState<Borrador[]>([]);
 
-  useEffect(() => {
-    // Aquí deberías hacer fetch a tu API
-    // Por ahora simulamos datos
-    setStats({
-      totalReportes: 156,
-      reportesCompletados: 142,
-      reportesPendientes: 8,
-      reportesMesActual: 23
-    });
-    setReportesRecientes([
-      { id: 1, cliente: 'Empresa ABC', fecha: '2025-12-06', tipo: 'Preventivo', estado: 'Completado' },
-      { id: 2, cliente: 'Corporación XYZ', fecha: '2025-12-05', tipo: 'Correctivo', estado: 'Borrador' },
-      { id: 3, cliente: 'Industrias DEF', fecha: '2025-12-04', tipo: 'Preventivo', estado: 'Completado' },
-      { id: 4, cliente: 'Grupo GHI', fecha: '2025-12-03', tipo: 'Emergencia', estado: 'Borrador' },
-      { id: 5, cliente: 'Comercial JKL', fecha: '2025-12-02', tipo: 'Preventivo', estado: 'Completado' }
-    ]);
+  //Creamos el hook para llamar la instancia de axios
+  const axiosInsance = useAxiosInstance();
 
-    // Cargar borradores (podrían venir de la API o localStorage)
-    setBorradores([
-      { id: 'draft-1', cliente: 'Corporación XYZ', fechaGuardado: '2025-12-05 14:30', porcentajeCompletado: 65 },
-      { id: 'draft-2', cliente: 'Grupo GHI', fechaGuardado: '2025-12-03 09:15', porcentajeCompletado: 40 }
-    ]);
+  //Obtenemos informacion usando la libreria AXIOS y useEffect
+  const fetchData = async (): Promise<void> => {
+
+    const url = `${VITE_BACKEND_URL}/api/reportes`;
+    try {
+      const response = await axiosInsance.get(url);
+      setStats(response.data);
+    } catch (error) {
+      setError(error);
+      setOpenError(true);
+    };
+  };
+
+
+useEffect(() => {
+    fetchData();
   }, []);
 
   const handleCrearReporte = () => {
@@ -190,11 +203,10 @@ const Dashboard = () => {
                     <span className="recent-item-divider">•</span>
                     <span className="recent-item-type">{reporte.tipo}</span>
                     <span className="recent-item-divider">•</span>
-                    <span className={`recent-item-status ${
-                      reporte.estado === 'Completado' ? 'status-completed' :
+                    <span className={`recent-item-status ${reporte.estado === 'Completado' ? 'status-completed' :
                       reporte.estado === 'Borrador' ? 'status-draft' :
-                      'status-pending'
-                    }`}>
+                        'status-pending'
+                      }`}>
                       {reporte.estado}
                     </span>
                   </div>
@@ -210,4 +222,4 @@ const Dashboard = () => {
   );
 };
 
-    export default Dashboard;
+export default Dashboard;
