@@ -55,9 +55,10 @@ const Dashboard = () => {
   //Obtenemos informacion usando la libreria AXIOS y useEffect
   const fetchData = async (): Promise<void> => {
 
-    const url = `${VITE_BACKEND_URL}/api/reportes`;
+    const url = `${VITE_BACKEND_URL}/api/reportes/readDash`;
     try {
       const response = await axiosInsance.get(url);
+      console.log(response);     
       setStats(response.data);
     } catch (error) {
       setError(error);
