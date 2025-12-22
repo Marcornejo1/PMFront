@@ -1,4 +1,4 @@
-# Estructura de Base de Datos para Reportes de Mantenimiento
+# Estructura de Base de Datos para Reportes de Mantenimiento (SQL Server)
 
 ## Análisis de la Estructura del Formulario
 
@@ -11,44 +11,46 @@ El formulario de `CrearReporte` contiene los siguientes grupos de datos:
 5. **Observaciones**
 6. **Imágenes de Referencia**
 
-## Propuesta de Tablas Normalizadas
+## Propuesta de Tablas Normalizadas (SQL Server)
 
 ### 1. Tabla: `reportes` (Principal)
 
 ```sql
-CREATE TABLE reportes (
-  idReporte VARCHAR(50) PRIMARY KEY,
-  cliente VARCHAR(255) NOT NULL,
-  direccion VARCHAR(255) NOT NULL,
-  ciudad VARCHAR(100) NOT NULL,
-  encargado VARCHAR(255) NOT NULL,
-  tipo ENUM('Preventivo', 'Correctivo', 'Emergencia', 'Instalación', 'Inspección') NOT NULL,
-  estado ENUM('Completado', 'Borrador', 'Pendiente') NOT NULL DEFAULT 'Borrador',
-  observaciones LONGTEXT,
-  tecnico VARCHAR(255),
-  usuarioCreador VARCHAR(255) NOT NULL,
-  fechaCreacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  fechaModificacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  
-  INDEX idx_cliente (cliente),
-  INDEX idx_tipo (tipo),
-  INDEX idx_estado (estado),
-  INDEX idx_estadoCompletitud (estadoCompletitud),
-  INDEX idx_usuarioCreador (usuarioCreador),
-  INDEX idx_fechaCreacion (fechaCreacion)
+CREATE TABLE reportes(
+  idReporte UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  cliente NVARCHAR(255) NOT NULL, 
+  direccion NVARCHAR(255) NOT NULL, 
+  ciudad NVARCHAR(100) NOT NULL, 
+  encargado NVARCHAR(255) NOT NULL,
+  tipo NVARCHAR(20) NOT NULL CHECK (tipo IN ('Arranque', 'Entrega', 'Preventivo', 'Correctivo', 'Otro')),
+  estado NVARCHAR(20) NOT NULL DEFAULT 'Borrador' CHECK(estado IN ('Completado', 'Borrador', 'Pendiente')),
+  observaciones NVARCHAR(MAX),
+  nombreRealizo NVARCHAR(255),
+  nombreRecibio NVARCHAR(255),
+  usuarioCreador NVARCHAR(255) NOT NULL,
+  fechaRealizo DATE NOT NULL DEFAULT GETDATE(),
+  fechaRecibio DATE NOT NULL DEFAULT GETDATE(),
+  fechaCreacion DATE NOT NULL DEFAULT GETDATE(),
+  fechaModificacion DATE NOT NULL DEFAULT GETDATE()
 );
+
+CREATE INDEX idx_cliente ON reportes(cliente);
+CREATE INDEX idx_tipo ON reportes(tipo);
+CREATE INDEX idx_estado ON reportes(estado);
+CREATE INDEX idx_usuarioCreador ON reportes(usuarioCreador);
+CREATE INDEX idx_fechaCreacion ON reportes(fechaCreacion);
 ```
 
 ### 2. Tabla: `equipos` (Información del Equipo/UPS)
 
 ```sql
 CREATE TABLE equipos (
-  idEquipo INT PRIMARY KEY AUTO_INCREMENT,
-  idReporte VARCHAR(50) NOT NULL,
-  marca VARCHAR(100) NOT NULL,
-  modelo VARCHAR(100) NOT NULL,
-  nSerie VARCHAR(100) NOT NULL UNIQUE,
-  modeloBateria VARCHAR(100),
+  idEquipo UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  idReporte UNIQUEIDENTIFIER NOT NULL,
+  marca NVARCHAR(100) NOT NULL,
+  modelo NVARCHAR(100) NOT NULL,
+  nSerie NVARCHAR(100) NOT NULL UNIQUE,
+  modeloBateria NVARCHAR(100),
   cantidadBaterias INT,
   anioFabricacionBaterias INT,
   
@@ -62,9 +64,9 @@ CREATE TABLE equipos (
 
 ```sql
 CREATE TABLE mediciones_electricas (
-  id INT PRIMARY KEY AUTO_INCREMENT,
-  reporteId INT NOT NULL,
-  tipo ENUM('Entrada', 'Salida') NOT NULL,
+  idMedicion UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  idReporte UNIQUEIDENTIFIER NOT NULL,
+  tipo NVARCHAR(10) NOT NULL CHECK (tipo IN ('Entrada', 'Salida')),
   
   -- Tensión Fase-Fase
   tensionFFAB DECIMAL(6,2),
@@ -81,8 +83,8 @@ CREATE TABLE mediciones_electricas (
   corrienteB DECIMAL(6,2),
   corrienteC DECIMAL(6,2),
   
-  FOREIGN KEY (reporteId) REFERENCES reportes(id) ON DELETE CASCADE,
-  INDEX idx_reporteId (reporteId),
+  FOREIGN KEY (idReporte) REFERENCES reportes(idReporte) ON DELETE CASCADE,
+  INDEX idx_idReporte (idReporte),
   INDEX idx_tipo (tipo)
 );
 ```
@@ -91,19 +93,18 @@ CREATE TABLE mediciones_electricas (
 
 ```sql
 CREATE TABLE datos_adicionales (
-  id INT PRIMARY KEY AUTO_INCREMENT,
-  reporteId INT NOT NULL,
+  idDato UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  idReporte UNIQUEIDENTIFIER NOT NULL,
   
   frecuenciaEntrada DECIMAL(5,2),
   frecuenciaSalida DECIMAL(5,2),
   porcentajeCarga DECIMAL(5,2),
-  
   tensionBateria DECIMAL(6,2),
   corrienteBateria DECIMAL(6,2),
   temperaturaUPS DECIMAL(5,2),
   
-  FOREIGN KEY (reporteId) REFERENCES reportes(id) ON DELETE CASCADE,
-  INDEX idx_reporteId (reporteId)
+  FOREIGN KEY (idReporte) REFERENCES reportes(idReporte) ON DELETE CASCADE,
+  INDEX idx_idReporte (idReporte)
 );
 ```
 
@@ -111,67 +112,68 @@ CREATE TABLE datos_adicionales (
 
 ```sql
 CREATE TABLE imagenes_referencia (
-  id INT PRIMARY KEY AUTO_INCREMENT,
-  reporteId INT NOT NULL,
-  nombreArchivo VARCHAR(500) NOT NULL,
-  urlArchivo VARCHAR(1000) NOT NULL,
-  tipoMime VARCHAR(50),
+  idImagen UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  idReporte UNIQUEIDENTIFIER NOT NULL,
+  nombreArchivo NVARCHAR(500) NOT NULL,
+  urlArchivo NVARCHAR(1000) NOT NULL,
+  tipoMime NVARCHAR(50),
   tamanio BIGINT,
-  fechaSubida DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  fechaSubida DATE NOT NULL DEFAULT GETDATE(),
   
-  FOREIGN KEY (reporteId) REFERENCES reportes(id) ON DELETE CASCADE,
-  INDEX idx_reporteId (reporteId)
+  FOREIGN KEY (idReporte) REFERENCES reportes(idReporte) ON DELETE CASCADE,
+  INDEX idx_idReporte (idReporte)
 );
 ```
 
-## Estructura Completa (SQL)
+## Estructura Completa (SQL Server)
 
 ```sql
 -- Tabla Principal
-CREATE TABLE reportes (
-  idReporte VARCHAR(50) PRIMARY KEY,
-  cliente VARCHAR(255) NOT NULL,
-  direccion VARCHAR(255) NOT NULL,
-  ciudad VARCHAR(100) NOT NULL,
-  encargado VARCHAR(255) NOT NULL,
-  tipo ENUM('Preventivo', 'Correctivo', 'Emergencia', 'Instalación', 'Inspección') NOT NULL,
-  estado ENUM('Completado', 'Borrador', 'Pendiente') NOT NULL DEFAULT 'Borrador',
-  estadoCompletitud ENUM('Completo', 'Parcial') NOT NULL DEFAULT 'Parcial',
-  observaciones LONGTEXT,
-  tecnico VARCHAR(255),
-  usuarioCreador VARCHAR(255) NOT NULL,
-  fechaCreacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  fechaModificacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  
-  INDEX idx_cliente (cliente),
-  INDEX idx_tipo (tipo),
-  INDEX idx_estado (estado),
-  INDEX idx_estadoCompletitud (estadoCompletitud),
-  INDEX idx_usuarioCreador (usuarioCreador),
-  INDEX idx_fechaCreacion (fechaCreacion)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE reportes(
+  idReporte UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  cliente NVARCHAR(255) NOT NULL, 
+  direccion NVARCHAR(255) NOT NULL, 
+  ciudad NVARCHAR(100) NOT NULL, 
+  encargado NVARCHAR(255) NOT NULL,
+  tipo NVARCHAR(20) NOT NULL CHECK (tipo IN ('Arranque', 'Entrega', 'Preventivo', 'Correctivo', 'Otro')),
+  estado NVARCHAR(20) NOT NULL DEFAULT 'Borrador' CHECK(estado IN ('Completado', 'Borrador', 'Pendiente')),
+  observaciones NVARCHAR(MAX),
+  nombreRealizo NVARCHAR(255),
+  nombreRecibio NVARCHAR(255),
+  usuarioCreador NVARCHAR(255) NOT NULL,
+  fechaRealizo DATE NOT NULL DEFAULT GETDATE(),
+  fechaRecibio DATE NOT NULL DEFAULT GETDATE(),
+  fechaCreacion DATE NOT NULL DEFAULT GETDATE(),
+  fechaModificacion DATE NOT NULL DEFAULT GETDATE()
+);
+
+CREATE INDEX idx_cliente ON reportes(cliente);
+CREATE INDEX idx_tipo ON reportes(tipo);
+CREATE INDEX idx_estado ON reportes(estado);
+CREATE INDEX idx_usuarioCreador ON reportes(usuarioCreador);
+CREATE INDEX idx_fechaCreacion ON reportes(fechaCreacion);
 
 -- Tabla de Equipos
 CREATE TABLE equipos (
-  idEquipo INT PRIMARY KEY AUTO_INCREMENT,
-  idReporte VARCHAR(50) NOT NULL,
-  marca VARCHAR(100) NOT NULL,
-  modelo VARCHAR(100) NOT NULL,
-  nSerie VARCHAR(100) NOT NULL UNIQUE,
-  modeloBateria VARCHAR(100),
+  idEquipo UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  idReporte UNIQUEIDENTIFIER NOT NULL,
+  marca NVARCHAR(100) NOT NULL,
+  modelo NVARCHAR(100) NOT NULL,
+  nSerie NVARCHAR(100) NOT NULL UNIQUE,
+  modeloBateria NVARCHAR(100),
   cantidadBaterias INT,
   anioFabricacionBaterias INT,
   
   FOREIGN KEY (idReporte) REFERENCES reportes(idReporte) ON DELETE CASCADE,
   INDEX idx_idReporte (idReporte),
   INDEX idx_nSerie (nSerie)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+);
 
 -- Tabla de Mediciones Eléctricas
 CREATE TABLE mediciones_electricas (
-  idMedicion INT PRIMARY KEY AUTO_INCREMENT,
-  idReporte VARCHAR(50) NOT NULL,
-  tipo ENUM('Entrada', 'Salida') NOT NULL,
+  idMedicion UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  idReporte UNIQUEIDENTIFIER NOT NULL,
+  tipo NVARCHAR(10) NOT NULL CHECK (tipo IN ('Entrada', 'Salida')),
   tensionFFAB DECIMAL(6,2),
   tensionFFBC DECIMAL(6,2),
   tensionFFCA DECIMAL(6,2),
@@ -185,12 +187,12 @@ CREATE TABLE mediciones_electricas (
   FOREIGN KEY (idReporte) REFERENCES reportes(idReporte) ON DELETE CASCADE,
   INDEX idx_idReporte (idReporte),
   INDEX idx_tipo (tipo)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+);
 
 -- Tabla de Datos Adicionales
 CREATE TABLE datos_adicionales (
-  idDato INT PRIMARY KEY AUTO_INCREMENT,
-  idReporte VARCHAR(50) NOT NULL,
+  idDato UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  idReporte UNIQUEIDENTIFIER NOT NULL,
   frecuenciaEntrada DECIMAL(5,2),
   frecuenciaSalida DECIMAL(5,2),
   porcentajeCarga DECIMAL(5,2),
@@ -200,21 +202,33 @@ CREATE TABLE datos_adicionales (
   
   FOREIGN KEY (idReporte) REFERENCES reportes(idReporte) ON DELETE CASCADE,
   INDEX idx_idReporte (idReporte)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+);
 
 -- Tabla de Imágenes
 CREATE TABLE imagenes_referencia (
-  idImagen INT PRIMARY KEY AUTO_INCREMENT,
-  idReporte VARCHAR(50) NOT NULL,
-  nombreArchivo VARCHAR(500) NOT NULL,
-  urlArchivo VARCHAR(1000) NOT NULL,
-  tipoMime VARCHAR(50),
+  idImagen UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  idReporte UNIQUEIDENTIFIER NOT NULL,
+  nombreArchivo NVARCHAR(500) NOT NULL,
+  urlArchivo NVARCHAR(1000) NOT NULL,
+  tipoMime NVARCHAR(50),
   tamanio BIGINT,
-  fechaSubida DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  fechaSubida DATE NOT NULL DEFAULT GETDATE(),
   
   FOREIGN KEY (idReporte) REFERENCES reportes(idReporte) ON DELETE CASCADE,
   INDEX idx_idReporte (idReporte)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+);
+
+-- Trigger para actualizar fechaModificacion automáticamente
+CREATE TRIGGER trg_UpdateFechaModificacion
+ON reportes
+AFTER UPDATE
+AS
+BEGIN
+    UPDATE reportes
+    SET fechaModificacion = GETDATE()
+    FROM reportes r
+    INNER JOIN inserted i ON r.idReporte = i.idReporte;
+END;
 ```
 
 ## Ventajas de Esta Estructura
@@ -250,25 +264,30 @@ CREATE TABLE imagenes_referencia (
 | `ModeloBateria, CantBaterias, AñoFabricacionBaterias` | `equipos` | datos de batería |
 | `Observaciones` | `reportes` | `observaciones` |
 | `referenciaImages` | `imagenes_referencia` | URLs/archivos |
-| **NEW** `usuarioCreador` | `reportes` | `usuarioCreador` |
-| **NEW** `estadoCompletitud` | `reportes` | `estadoCompletitud` |
+| `usuarioCreador` | `reportes` | `usuarioCreador` |
+| `nombreRealizo` | `reportes` | `nombreRealizo` |
+| `nombreRecibio` | `reportes` | `nombreRecibio` |
+| `fechaRealizo` | `reportes` | `fechaRealizo` |
+| `fechaRecibio` | `reportes` | `fechaRecibio` |
 
 ## Tipos de Datos Utilizados
 
-- **VARCHAR**: Cadenas de texto de longitud variable (cliente, marca, etc.)
-- **ENUM**: Opciones fijas (tipo, estado)
+- **UNIQUEIDENTIFIER**: Identificadores únicos globales (GUID) para todas las claves primarias
+- **NVARCHAR**: Cadenas de texto Unicode de longitud variable (cliente, marca, etc.)
+- **NVARCHAR con CHECK**: Opciones fijas usando restricciones CHECK (tipo, estado)
 - **DECIMAL**: Números con decimales para mediciones (6,2) = máx 9999.99
-- **LONGTEXT**: Para observaciones largas
-- **DATETIME**: Timestamps de creación/modificación
+- **NVARCHAR(MAX)**: Para observaciones largas
+- **DATE**: Fechas sin hora
 - **BIGINT**: Tamaño de archivos
-- **INT**: IDs y cantidades
+- **INT**: Cantidades y números enteros
 
 ## Notas Importantes
 
 1. **Imágenes**: Se recomienda almacenar URLs/rutas en BD y archivos en storage (AWS S3, servidor de archivos, etc.)
-2. **Reportes Duplicados**: Usar UUID en lugar de INT si se necesita distribuir entre servidores
+2. **Reportes Duplicados**: Usar UNIQUEIDENTIFIER evita conflictos en sistemas distribuidos
 3. **Auditoría**: Considerar agregar columna `usuarioId` para tracking de quién creó/modificó
-4. **Borrador Automático**: La columna `fechaModificacion` se actualiza automáticamente
+4. **Borrador Automático**: La columna `fechaModificacion` se actualiza automáticamente con un trigger
+5. **Unicode**: Se usa NVARCHAR para soporte completo de caracteres Unicode
 
 ## Alternativa: Tabla Desnormalizada (Menos Óptima)
 
@@ -276,18 +295,19 @@ Si prefieres una sola tabla (menos flexible pero más simple inicialmente):
 
 ```sql
 CREATE TABLE reportes_completos (
-  idReporte VARCHAR(50) PRIMARY KEY,
-  cliente VARCHAR(255),
-  direccion VARCHAR(255),
-  ciudad VARCHAR(100),
-  encargado VARCHAR(255),
-  marca VARCHAR(100),
-  modelo VARCHAR(100),
-  nSerie VARCHAR(100) UNIQUE,
-  tipo ENUM(...),
-  estado ENUM(...),
-  estadoCompletitud ENUM('Completo', 'Parcial'),
-  usuarioCreador VARCHAR(255),
+  idReporte UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  cliente NVARCHAR(255),
+  direccion NVARCHAR(255),
+  ciudad NVARCHAR(100),
+  encargado NVARCHAR(255),
+  marca NVARCHAR(100),
+  modelo NVARCHAR(100),
+  nSerie NVARCHAR(100) UNIQUE,
+  tipo NVARCHAR(20) CHECK (tipo IN ('Arranque', 'Entrega', 'Preventivo', 'Correctivo', 'Otro')),
+  estado NVARCHAR(20) DEFAULT 'Borrador' CHECK (estado IN ('Completado', 'Borrador', 'Pendiente')),
+  usuarioCreador NVARCHAR(255),
+  nombreRealizo NVARCHAR(255),
+  nombreRecibio NVARCHAR(255),
   
   -- Mediciones entrada
   EnFFAB DECIMAL(6,2), EnFFBC DECIMAL(6,2), EnFFCA DECIMAL(6,2),
@@ -302,12 +322,13 @@ CREATE TABLE reportes_completos (
   -- Datos adicionales
   FrecEntr DECIMAL(5,2), FrecSalid DECIMAL(5,2), PorCarga DECIMAL(5,2),
   TenBateria DECIMAL(6,2), CorrBateria DECIMAL(6,2), TempUPS DECIMAL(5,2),
-  ModeloBateria VARCHAR(100), CantBaterias INT, AñoFabricacionBaterias INT,
+  ModeloBateria NVARCHAR(100), CantBaterias INT, AñoFabricacionBaterias INT,
   
-  observaciones LONGTEXT,
-  tecnico VARCHAR(255),
-  fechaCreacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-  fechaModificacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  observaciones NVARCHAR(MAX),
+  fechaRealizo DATE DEFAULT GETDATE(),
+  fechaRecibio DATE DEFAULT GETDATE(),
+  fechaCreacion DATE DEFAULT GETDATE(),
+  fechaModificacion DATE DEFAULT GETDATE()
 );
 ```
 
