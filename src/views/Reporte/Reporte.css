@@ -431,7 +431,7 @@
 }
 
 form {
-  max-width: 210mm; /* Tamaño A4 */
+  max-width: 80%;
   margin: 0 auto;
   background-color: var(--blanco);
   padding: 2rem;

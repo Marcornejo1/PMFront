@@ -66,26 +66,39 @@ CREATE TABLE equipos (
 CREATE TABLE mediciones_electricas (
   idMedicion UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
   idReporte UNIQUEIDENTIFIER NOT NULL,
-  tipo NVARCHAR(10) NOT NULL CHECK (tipo IN ('Entrada', 'Salida')),
   
-  -- Tensión Fase-Fase
-  tensionFFAB DECIMAL(6,2),
-  tensionFFBC DECIMAL(6,2),
-  tensionFFCA DECIMAL(6,2),
+  -- Mediciones de entrada - Tensiones Fase-Fase
+  enFFAB DECIMAL(6,2),
+  enFFBC DECIMAL(6,2),
+  enFFCA DECIMAL(6,2),
   
-  -- Tensión Fase-Neutro
-  tensionFNAN DECIMAL(6,2),
-  tensionFNBN DECIMAL(6,2),
-  tensionFNCN DECIMAL(6,2),
+  -- Mediciones de entrada - Tensiones Fase-Neutro
+  enFNAN DECIMAL(6,2),
+  enFNBN DECIMAL(6,2),
+  enFNCN DECIMAL(6,2),
   
-  -- Corriente
-  corrienteA DECIMAL(6,2),
-  corrienteB DECIMAL(6,2),
-  corrienteC DECIMAL(6,2),
+  -- Mediciones de entrada - Corrientes
+  CorrA DECIMAL(6,2),
+  CorrB DECIMAL(6,2),
+  CorrC DECIMAL(6,2),
   
+  -- Mediciones de salida - Tensiones Fase-Fase
+  SalFFAB DECIMAL(6,2),
+  SalFFBC DECIMAL(6,2),
+  SalFFCA DECIMAL(6,2),
+  
+  -- Mediciones de salida - Tensiones Fase-Neutro
+  SalFNAN DECIMAL(6,2),
+  SalFNBN DECIMAL(6,2),
+  SalFNCN DECIMAL(6,2),
+  
+  -- Mediciones de salida - Corrientes
+  CorrSalidaA DECIMAL(6,2),
+  CorrSalidaB DECIMAL(6,2),
+  CorrSalidaC DECIMAL(6,2),
+
   FOREIGN KEY (idReporte) REFERENCES reportes(idReporte) ON DELETE CASCADE,
-  INDEX idx_idReporte (idReporte),
-  INDEX idx_tipo (tipo)
+  INDEX idx_idReporte (idReporte)
 );
 ```
 
@@ -173,20 +186,39 @@ CREATE TABLE equipos (
 CREATE TABLE mediciones_electricas (
   idMedicion UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
   idReporte UNIQUEIDENTIFIER NOT NULL,
-  tipo NVARCHAR(10) NOT NULL CHECK (tipo IN ('Entrada', 'Salida')),
-  tensionFFAB DECIMAL(6,2),
-  tensionFFBC DECIMAL(6,2),
-  tensionFFCA DECIMAL(6,2),
-  tensionFNAN DECIMAL(6,2),
-  tensionFNBN DECIMAL(6,2),
-  tensionFNCN DECIMAL(6,2),
-  corrienteA DECIMAL(6,2),
-  corrienteB DECIMAL(6,2),
-  corrienteC DECIMAL(6,2),
+  
+  -- Mediciones de entrada - Tensiones Fase-Fase
+  enFFAB DECIMAL(6,2),
+  enFFBC DECIMAL(6,2),
+  enFFCA DECIMAL(6,2),
+  
+  -- Mediciones de entrada - Tensiones Fase-Neutro
+  enFNAN DECIMAL(6,2),
+  enFNBN DECIMAL(6,2),
+  enFNCN DECIMAL(6,2),
+  
+  -- Mediciones de entrada - Corrientes
+  CorrA DECIMAL(6,2),
+  CorrB DECIMAL(6,2),
+  CorrC DECIMAL(6,2),
+  
+  -- Mediciones de salida - Tensiones Fase-Fase
+  SalFFAB DECIMAL(6,2),
+  SalFFBC DECIMAL(6,2),
+  SalFFCA DECIMAL(6,2),
+
+  -- Mediciones de salida - Tensiones Fase-Neutro
+  SalFNAN DECIMAL(6,2),
+  SalFNBN DECIMAL(6,2),
+  SalFNCN DECIMAL(6,2),
+  
+  -- Mediciones de salida - Corrientes
+  CorrSalidaA DECIMAL(6,2),
+  CorrSalidaB DECIMAL(6,2),
+  CorrSalidaC DECIMAL(6,2),
   
   FOREIGN KEY (idReporte) REFERENCES reportes(idReporte) ON DELETE CASCADE,
-  INDEX idx_idReporte (idReporte),
-  INDEX idx_tipo (tipo)
+  INDEX idx_idReporte (idReporte)
 );
 
 -- Tabla de Datos Adicionales
@@ -253,12 +285,12 @@ END;
 | `marca` | `equipos` | `marca` |
 | `modelo` | `equipos` | `modelo` |
 | `nSerie` | `equipos` | `nSerie` |
-| `EnFFAB, EnFFBC, EnFFCA` | `mediciones_electricas` | tensiones FF (Entrada) |
-| `EnFNAN, EnFNBN, ENFNCN` | `mediciones_electricas` | tensiones FN (Entrada) |
-| `CorrA, CorrB, CorrC` | `mediciones_electricas` | corrientes (Entrada) |
-| `SalFFAB, SalFFBC, SalFFCA` | `mediciones_electricas` | tensiones FF (Salida) |
-| `SalFNAN, SalFNBN, SalFNCN` | `mediciones_electricas` | tensiones FN (Salida) |
-| `CorrSalidaA, CorrSalidaB, CorrSalidaC` | `mediciones_electricas` | corrientes (Salida) |
+| `EnFFAB, EnFFBC, EnFFCA` | `mediciones_electricas` | `enFFAB, enFFBC, enFFCA` |
+| `EnFNAN, EnFNBN, ENFNCN` | `mediciones_electricas` | `enFNAN, enFNBN, enFNCN` |
+| `CorrA, CorrB, CorrC` | `mediciones_electricas` | `enCorrA, enCorrB, enCorrC` |
+| `SalFFAB, SalFFBC, SalFFCA` | `mediciones_electricas` | `salFFAB, salFFBC, salFFCA` |
+| `SalFNAN, SalFNBN, SalFNCN` | `mediciones_electricas` | `salFNAN, salFNBN, salFNCN` |
+| `CorrSalidaA, CorrSalidaB, CorrSalidaC` | `mediciones_electricas` | `salCorrA, salCorrB, salCorrC` |
 | `FrecEntr, FrecSalid, PorCarga` | `datos_adicionales` | frecuencias y carga |
 | `TenBateria, CorrBateria, TempUPS` | `datos_adicionales` | parámetros de batería/UPS |
 | `ModeloBateria, CantBaterias, AñoFabricacionBaterias` | `equipos` | datos de batería |

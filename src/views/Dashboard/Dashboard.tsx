@@ -50,16 +50,18 @@ const Dashboard = () => {
   const [borradores, setBorradores] = useState<Borrador[]>([]);
 
   //Creamos el hook para llamar la instancia de axios
-  const axiosInsance = useAxiosInstance();
+  const axiosInstance = useAxiosInstance();
 
   //Obtenemos informacion usando la libreria AXIOS y useEffect
   const fetchData = async (): Promise<void> => {
 
     const url = `${VITE_BACKEND_URL}/api/reportes/readDash`;
     try {
-      const response = await axiosInsance.get(url);
+      const response = await axiosInstance.get(url);
       console.log(response);     
-      setStats(response.data);
+      setStats(response.data.estadisticas);
+      setReportesRecientes(response.data.reportesRecientes);
+      setBorradores(response.data.borradores);
     } catch (error) {
       setError(error);
       setOpenError(true);

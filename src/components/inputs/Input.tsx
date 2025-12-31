@@ -47,11 +47,9 @@ const Input = ({ type, name, text, min, max, maxLength, minLength, required, pat
         autoComplete="off"
         onWheel={handleWheel}
         {...register(name, {
-          //Funcion que deja validar si esta colocada la propiedad toUpper para convertir a mayusculas
-          onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
-            if (toUpperValue)
-              toUpperValue.setValue(name, event.currentTarget.value.toUpperCase());
-          },
+          onChange: toUpperValue ? (event: React.ChangeEvent<HTMLInputElement>) => {
+            toUpperValue.setValue(name, event.currentTarget.value.toUpperCase());
+          } : undefined,
         })}
       />
     </div>

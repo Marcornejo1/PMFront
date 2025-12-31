@@ -7,7 +7,20 @@ import InputTextArea from "../../../components/inputs/InputTextArea";
 import InputDateField from "../../../components/inputs/InputDateField";
 import InputImageUpload from "../../../components/inputs/InputImageUpload";
 import InputOptions from "../../../components/inputs/InputOptions";
+import useAxiosInstance from "../../../functions/axiosInstance";
+import { useNavigate } from "react-router-dom";
+import HandleErrors from "../../../components/helpers/handleErrors/HandleErrors";
+import WarningAgreementMessage from "../../../components/messages/warning/WarningAgreementMessage";
+import Modal from "../../../components/modals/Modal";
+import CorrectoMessage from "../../../components/messages/correcto/CorrectoMessage";
+import { MAYUS_REG_EX, MAYUS_REG_EX_INPUT } from "../../../const/regex";
+import { useAuthContext } from "../../../context/AuthContext";
 const tipoOptions = ["Preventivo", "Correctivo", "Emergencia", "Instalación", "Inspección"];
+
+interface Props {
+  onCloseComponent: () => void;
+  onFinalizeProcess: () => void;
+}
 
 interface FormData {
   // Información General
@@ -65,39 +78,45 @@ interface FormData {
   fechaRecibido: string,
 }
 
-const CrearReporte = () => {
-  const { register, handleSubmit, setValue, getValues, watch } = useForm<FormData>();
+const CrearReporte = ({ onCloseComponent, onFinalizeProcess }: Props) => {
+  const navigate = useNavigate();
+
+  //Se importan variables globales
+  const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL
+
+
+  const { register, handleSubmit, setValue, getValues, watch } = useForm<FormData>({ defaultValues: { cliente: "", direccion: "", ciudad: "", encargado: "", marca: "", modelo: "", nSerie: "", tipo: "", referenciaImages: [], EnFFAB: "0", EnFFBC: "0", EnFFCA: "0", EnFNAN: "0", EnFNBN: "0", ENFNCN: "0", CorrA: "0", CorrB: "0", CorrC: "0", SalFFAB: "0", SalFFBC: "0", SalFFCA: "0", SalFNAN: "0", SalFNBN: "0", SalFNCN: "0", CorrSalidaA: "0", CorrSalidaB: "0", CorrSalidaC: "0", FrecEntr: "0", FrecSalid: "0", PorCarga: "0", TenBateria: "0", CorrBateria: "0", TempUPS: "0", ModeloBateria: "-", CantBaterias: "0", AñoFabricacionBaterias: "0000", Observaciones: "-", nombreRealizo: "-", nombreRecibio: "-", fechaRealizado: "1000/01/01", fechaRecibido: "1000/01/01" } });
   const watchTipo = watch("tipo");
+
+  // Obtener el nombre de usuario logueado
+  const { authData } = useAuthContext();
 
   //Estado para controlar la apertura de los mensajes
   const [openModal, setOpenModal] = useState<"form" | "warning" | "success" | "error" | "loading">("form");
+  const [disabledButton, setDisabledButton] = useState<boolean>(false);
+
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState<number>(0);
 
+  // Estado para manejar errores
+  const [error, setError] = useState<string>("");
+  const [warningData, setWarningData] = useState([]);
+
+  //creamos el hook para llamar la instancia de axios
+  const axiosInstance = useAxiosInstance();
+
   useEffect(() => {
     setOpenModal("form");
-    // Cargar borrador del localStorage si existe
-    const borrador = localStorage.getItem('reporteBorrador');
-    if (borrador) {
-      const datos = JSON.parse(borrador);
-      Object.keys(datos).forEach((key) => {
-        setValue(key as keyof FormData, datos[key]);
-      });
-    }
-  }, [setValue]);
+  }, []);
 
-  const guardarBorrador = () => {
+  const guardarBorrador = async (data: FormData) => {
     setIsSaving(true);
-    const formData = getValues();
-    localStorage.setItem('reporteBorrador', JSON.stringify(formData));
-    
-    // Aquí podrías hacer un POST a tu API para guardar en BD
-    // await axios.post('/api/reportes/borrador', { ...formData, estado: 'Borrador' });
-    
-    setTimeout(() => {
-      setIsSaving(false);
-      alert('Borrador guardado exitosamente');
-    }, 500);
+    //Logica para guardar el formulario como borrador
+    const urlAgregarReporte = `${VITE_BACKEND_URL}/api/reportes`;
+    await axiosInstance.post(urlAgregarReporte, { data, estado: "Borrador", usuarioCreador: authData.username });
+
+    //Mostramos el mensaje de confirmacion y regresamos a la vista de reportes
+    setOpenModal("success");
   };
 
   const nextStep = () => setCurrentStep(prev => prev + 1);
@@ -105,14 +124,106 @@ const CrearReporte = () => {
 
   const enviarForm = async (data: FormData) => {
     //Lógica para enviar el formulario como completado
-    console.log('Enviando reporte completado:', data);
-    
+    //Bloqueamos el boton para evitar múltiples envíos
+    setDisabledButton(true);
+
+    try {
+      //Validamos datos del formulario
+      const { cliente, direccion, ciudad, encargado, marca, modelo, nSerie, tipo, referenciaImages, EnFFAB, EnFFBC, EnFFCA,
+        EnFNAN, EnFNBN, ENFNCN, CorrA, CorrB, CorrC, SalFFAB, SalFFBC, SalFFCA, SalFNAN, SalFNBN, SalFNCN, CorrSalidaA, CorrSalidaB, CorrSalidaC,
+        FrecEntr, FrecSalid, PorCarga, TenBateria, CorrBateria, TempUPS, ModeloBateria, CantBaterias, AñoFabricacionBaterias,
+        Observaciones, nombreRealizo, nombreRecibio, fechaRealizado, fechaRecibido } = data;
+
+      //Formateamos las fechas
+      let fechaRealizadoFormat = formatDate(fechaRealizado);
+      let fechaRecibidoFormat = formatDate(fechaRecibido);
+
+      //Validamos que no esten vacíos los campos obligatorios
+      if (!cliente || !direccion || !ciudad || !encargado || !marca || !modelo || !nSerie || !tipo || !FrecEntr || !FrecSalid || !PorCarga || !TenBateria || !CorrBateria || !TempUPS || !ModeloBateria || !CantBaterias || !AñoFabricacionBaterias)
+        throw new Error("missingData");
+
+      //Validamos los tipos de datos
+      if (typeof cliente !== 'string' || typeof direccion !== 'string' || typeof ciudad !== 'string' || typeof encargado !== 'string'
+        || typeof marca !== 'string' || typeof modelo !== 'string' || typeof nSerie !== 'string' || typeof tipo !== 'string' || !Array.isArray(referenciaImages)
+        || typeof FrecEntr !== 'string' || typeof FrecSalid !== 'string' || typeof PorCarga !== 'string' || typeof TenBateria !== 'string'
+        || typeof CorrBateria !== 'string' || typeof TempUPS !== 'string' || typeof ModeloBateria !== 'string' || typeof CantBaterias !== 'string'
+        || typeof AñoFabricacionBaterias !== 'string' || typeof Observaciones !== 'string' || typeof nombreRealizo !== 'string' || typeof nombreRecibio !== 'string'
+        || typeof fechaRealizadoFormat !== 'string' || typeof fechaRecibidoFormat !== 'string' || typeof EnFFAB !== 'string' || typeof EnFFBC !== 'string' || typeof EnFFCA !== 'string'
+        || typeof EnFNAN !== 'string' || typeof EnFNBN !== 'string' || typeof ENFNCN !== 'string' || typeof CorrA !== 'string' || typeof CorrB !== 'string'
+        || typeof CorrC !== 'string' || typeof SalFFAB !== 'string' || typeof SalFFBC !== 'string' || typeof SalFFCA !== 'string' || typeof SalFNAN !== 'string'
+        || typeof SalFNBN !== 'string' || typeof SalFNCN !== 'string' || typeof CorrSalidaA !== 'string' || typeof CorrSalidaB !== 'string' || typeof CorrSalidaC !== 'string') {
+        console.log("Error de tipo");
+        throw new Error("typeError");
+
+
+      }
+      //Validamos que el número de serie cumpla las expresiones regulares
+      if (!MAYUS_REG_EX.test(nSerie)) {
+        throw new Error("typeError");
+        console.log("error en serie");
+      }
+      //Enviamos solicitud para encontrar coincidencias con el mismo número de serie
+      const urlFindMatch = `${VITE_BACKEND_URL}/api/reportes/findMatch?numeroSerie=${nSerie}`;
+      const responseFindMatch = await axiosInstance.get(urlFindMatch);
+      console.log(responseFindMatch);
+
+      //Se revisa el status de la busqueda
+      if (responseFindMatch.status === 202) {
+        //Quiere decir que hay coincidencia
+        setWarningData(responseFindMatch.data);
+        setOpenModal("warning");
+      } else {
+        //Si el estatus es correcto, hacemos la solicitud para enviar los datos
+        const urlAgregarReporte = `${VITE_BACKEND_URL}/api/reportes`;
+        await axiosInstance.post(urlAgregarReporte, { data, estado: "Completado", usuarioCreador: authData.username });
+
+        //Mostramos el mensaje de confirmacion y regresamos a la vista de reportes
+        setOpenModal("success");
+
+      }
+
+
+    } catch (error: any) {
+      setError(error);
+      setOpenModal("error");
+      console.error("Error al enviar el formulario:", error);
+
+    }
+
+
+
     // Aquí harías el POST a tu API
     // await axios.post('/api/reportes', { ...data, estado: 'Completado' });
-    
+
     // Limpiar borrador del localStorage
     localStorage.removeItem('reporteBorrador');
+    setDisabledButton(false);
   };
+
+
+  //Función para crear el reporte a pesar de las coincidencias
+  const createReporte = async () => {
+    //Si el estatus es correcto, hacemos la solicitud para enviar los datos
+    const urlAgregarReporte = `${VITE_BACKEND_URL}/api/reportes`;
+    await axiosInstance.post(urlAgregarReporte, getValues());
+
+    //Mostramos el mensaje de confirmacion y regresamos a la vista de reportes
+    setOpenModal("success");
+    navigate("/reportes");
+  }
+
+  //Funcion para dar formato a fechas
+  const formatDate = (date: string): string => {
+    if (!date) return "";
+
+    const fecha = new Date(date);
+
+    const year = fecha.getFullYear();
+    const month = String(fecha.getMonth() + 1).padStart(2, "0"); //Se suma 1 porque los meses van de 0 a 11
+    const day = String(fecha.getDate()).padStart(2, "0"); //Obtenemos el día del mes
+
+    return `${year}-${month}-${day}`;
+  }
 
   const totalSteps = 4;
 
@@ -128,7 +239,7 @@ const CrearReporte = () => {
               <Input type="text" name="direccion" text="Dirección" required={true} register={register} />
               <Input type="text" name="modelo" text="Modelo" required={true} register={register} />
               <Input type="text" name="ciudad" text="Ciudad" required={true} register={register} />
-              <Input type="text" name="nSerie" text="Número de Serie" required={true} register={register} />
+              <Input type="text" name="nSerie" text="Número de Serie" required={true} register={register} pattern={MAYUS_REG_EX_INPUT} toUpperValue={{ setValue: setValue }} />
               <Input type="text" name="encargado" text="Encargado/a" required={true} register={register} />
               <InputOptions
                 name="tipo"
@@ -198,15 +309,15 @@ const CrearReporte = () => {
             <div className="form-section">
               <h3>Datos Adicionales</h3>
               <div className="form-grid">
-                <Input type="number" name="FrecEntr" text="Frecuencia de Entrada (Hz)" required={false} register={register} />
-                <Input type="number" name="FrecSalid" text="Frecuencia de Salida (Hz)" required={false} register={register} />
-                <Input type="number" name="PorCarga" text="Porcentaje de Carga (%)" required={false} register={register} />
-                <Input type="number" name="TenBateria" text="Tensión de la batería (V)" required={false} register={register} />
-                <Input type="number" name="CorrBateria" text="Corriente de la batería (A)" required={false} register={register} />
-                <Input type="text" name="ModeloBateria" text="Modelo de la batería" required={false} register={register} />
-                <Input type="number" name="CantBaterias" text="Cantidad de baterías" required={false} register={register} />
-                <Input type="number" name="AñoFabricacionBaterias" text="Año de fabricación de las baterías" required={false} register={register} />
-                <Input type="number" name="TempUPS" text="Temperatura UPS (°C)" required={false} register={register} />
+                <Input type="number" name="FrecEntr" text="Frecuencia de Entrada (Hz)" required={true} register={register} />
+                <Input type="number" name="FrecSalid" text="Frecuencia de Salida (Hz)" required={true} register={register} />
+                <Input type="number" name="PorCarga" text="Porcentaje de Carga (%)" required={true} register={register} />
+                <Input type="number" name="TenBateria" text="Tensión de la batería (V)" required={true} register={register} />
+                <Input type="number" name="CorrBateria" text="Corriente de la batería (A)" required={true} register={register} />
+                <Input type="text" name="ModeloBateria" text="Modelo de la batería" required={true} register={register} />
+                <Input type="number" name="CantBaterias" text="Cantidad de baterías" required={true} register={register} />
+                <Input type="number" name="AñoFabricacionBaterias" text="Año de fabricación de las baterías" required={true} register={register} />
+                <Input type="number" name="TempUPS" text="Temperatura UPS (°C)" required={true} register={register} />
               </div>
             </div>
 
@@ -253,47 +364,57 @@ const CrearReporte = () => {
 
             {/* Botones de acción */}
             <div className="form-actions">
-              <Button 
-                btnType="button" 
-                className="secondary" 
-                text={isSaving ? "Guardando..." : "Guardar Borrador"} 
-                onClick={guardarBorrador}
+              <Button
+                btnType="button"
+                className="secondary"
+                text={isSaving ? "Guardando..." : "Guardar Borrador"}
+                onClick={() => guardarBorrador(getValues())}
                 disabled={isSaving}
               />
               {currentStep > 0 && (
-                <Button 
-                  btnType="button" 
-                  className="secondary" 
-                  text="Anterior" 
+                <Button
+                  btnType="button"
+                  className="secondary"
+                  text="Anterior"
                   onClick={prevStep}
                 />
               )}
-              {currentStep < totalSteps - 1 ? (
-                <Button 
-                  btnType="button" 
-                  className="primary" 
-                  text="Siguiente" 
+              {currentStep < totalSteps - 1 && (
+                <Button
+                  btnType="button"
+                  className="primary"
+                  text="Siguiente"
                   onClick={nextStep}
                 />
-              ) : (
-                <Button 
-                  btnType="submit" 
-                  className="primary" 
-                  text="Enviar Reporte" 
-                  onClick={() => { }} 
+              )}{currentStep === totalSteps - 1 && (
+                <Button
+                  btnType="submit"
+                  className="primary"
+                  text="Enviar Reporte"
+                  disabled={disabledButton}
+                  onClick={() => { }}
                 />
               )}
             </div>
           </form>
         );
       case 'loading':
-        return <div>Cargando...</div>;
+        return (
+          <Modal size="modalSmall" title="Agregar acuerdo" handleClose={onCloseComponent}>
+            <h3>Cargando...</h3>
+          </Modal>
+        );
       case 'success':
-        return <div>Éxito al enviar el formulario.</div>;
+        return (
+          //Cuando se envíe correctamente el formulario se realiza la acción indicada (actualización, fetch, etc)
+          <CorrectoMessage handleAcceptMessage={() => navigate("/reporte")} />
+        );
       case 'error':
-        return <div>Error al enviar el formulario.</div>;
+        return (
+          <HandleErrors error={error} handleFatalError={() => setOpenModal("form")} handleWarningError={() => setOpenModal("form")} />
+        );
       case 'warning':
-        return <div>Advertencia: Revise los datos ingresados.</div>;
+        <WarningAgreementMessage data={warningData} originString={getValues("nSerie")} handleAcceptMessage={createReporte} handleCancelMessage={() => setOpenModal("form")} />
     }
   }
 
