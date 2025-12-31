@@ -1,22 +1,16 @@
 import "./Reporte.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import {
-  PiFileArchiveBold,
-  PiMagnifyingGlassBold,
-  PiPencilBold,
-  PiTrashBold,
-  PiEyeBold,
-  PiFunnelBold,
-  PiDownloadBold
-} from "react-icons/pi";
+import { PiFileArchiveBold, PiMagnifyingGlassBold, PiPencilBold, PiTrashBold, PiEyeBold, PiFunnelBold, PiDownloadBold } from "react-icons/pi";
 import Button from "../../components/buttons/Button";
 import Input from "../../components/inputs/Input";
 import InputSelect from "../../components/inputs/InputSelect";
+import { TitleContext } from "../../context/TitleContext";
+import useAxiosInstance from "../../functions/axiosInstance";
 
-interface Reporte {
-  id: number;
+interface ReportesData {
+  id: string;
   cliente: string;
   marca: string;
   modelo: string;
@@ -25,133 +19,75 @@ interface Reporte {
   estado: "Completado" | "Borrador" | "Pendiente";
   fechaCreacion: string;
   fechaModificacion: string;
-  tecnico: string;
+  creador: string;
 }
 
-interface FilterFormData {
-  searchTerm: string;
+interface FilterData {
+  termBusqueda: string;
   filterEstado: string;
   filterTipo: string;
 }
 
 const Reporte = () => {
+  //Usar useEffect para mostrar el titulo cuando se monta el componente, esto evita que haya errores en consola
+  const context = useContext(TitleContext);
+  useEffect(() => {
+    context?.setTitle("Reportes")
+  }, []);
+
+  //Importamos variables globales
+  const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
+  //Creamos el hook para llamar la instancia de axios
+  const axiosInstance = useAxiosInstance();
+
   const navigate = useNavigate();
-  const { register, control, watch, setValue } = useForm<FilterFormData>({
+  const { register, control, setValue } = useForm<FilterData>({
     defaultValues: {
-      searchTerm: "",
+      termBusqueda: "",
       filterEstado: "Todos",
       filterTipo: "Todos"
     }
   });
 
   // Estados
-  const [reportes, setReportes] = useState<Reporte[]>([]);
-  const [filteredReportes, setFilteredReportes] = useState<Reporte[]>([]);
+  const [reportes, setReportes] = useState<ReportesData[]>([]);
+  const [filteredReportes, setFilteredReportes] = useState<ReportesData[]>([]);
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const [selectedReporte, setSelectedReporte] = useState<number | null>(null);
-
-  // Observar cambios en los campos del formulario
-  const searchTerm = watch("searchTerm");
-  const filterEstado = watch("filterEstado");
-  const filterTipo = watch("filterTipo");
+  const [fData, setfData] = useState<FilterData>({ termBusqueda: "", filterEstado: "Todos", filterTipo: "Todos" });
+  const [openError, setOpenError] = useState<boolean>(false);
+  const [error, setError] = useState<any>();
 
   // Cargar reportes (simulados por ahora)
-  useEffect(() => {
-    // Aquí harías: await axios.get('/api/reportes')
-    const reportesSimulados: Reporte[] = [
-      {
-        id: 1,
-        cliente: "Empresa ABC",
-        marca: "APC",
-        modelo: "Smart-UPS 3000",
-        nSerie: "AS1234567890",
-        tipo: "Preventivo",
-        estado: "Completado",
-        fechaCreacion: "2025-12-01",
-        fechaModificacion: "2025-12-01",
-        tecnico: "Juan Pérez"
-      },
-      {
-        id: 2,
-        cliente: "Corporación XYZ",
-        marca: "Eaton",
-        modelo: "9PX 5000",
-        nSerie: "ET9876543210",
-        tipo: "Correctivo",
-        estado: "Borrador",
-        fechaCreacion: "2025-12-05",
-        fechaModificacion: "2025-12-06",
-        tecnico: "María García"
-      },
-      {
-        id: 3,
-        cliente: "Industrias DEF",
-        marca: "Vertiv",
-        modelo: "Liebert GXT4",
-        nSerie: "VT5555555555",
-        tipo: "Preventivo",
-        estado: "Completado",
-        fechaCreacion: "2025-11-28",
-        fechaModificacion: "2025-11-28",
-        tecnico: "Carlos López"
-      },
-      {
-        id: 4,
-        cliente: "Grupo GHI",
-        marca: "Schneider",
-        modelo: "Galaxy VS",
-        nSerie: "SC1111111111",
-        tipo: "Emergencia",
-        estado: "Borrador",
-        fechaCreacion: "2025-12-03",
-        fechaModificacion: "2025-12-04",
-        tecnico: "Ana Martínez"
-      },
-      {
-        id: 5,
-        cliente: "Comercial JKL",
-        marca: "APC",
-        modelo: "Smart-UPS 1500",
-        nSerie: "AS2222222222",
-        tipo: "Instalación",
-        estado: "Completado",
-        fechaCreacion: "2025-11-25",
-        fechaModificacion: "2025-11-25",
-        tecnico: "Juan Pérez"
-      }
-    ];
+  const fetchData = async (filterParams?: FilterData): Promise<void> => {
+    //Si se reciben nuevos parámetros sobreescribimos el estado, si no usamos el actual
+    const filterData = filterParams || fData; //Se creó esta variable para usar la información desde el inicio de la función sin esperar a que se actualice el estado
+    const url = `${VITE_BACKEND_URL}/api/reportes?termBusqueda=${filterData.termBusqueda}&filterEstado=${filterData.filterEstado}&filterTipo=${filterData.filterTipo}`;
+    try {
+      //Validamos que cumplan los tipos de datos, al venir de rutas todo es string
+      if (typeof filterData.termBusqueda !== "string" || typeof filterData.filterEstado !== "string" || typeof filterData.filterTipo !== "string")
+        throw new Error("typeError");
 
-    setReportes(reportesSimulados);
-    setFilteredReportes(reportesSimulados);
+      const response = await axiosInstance.get(url);
+      console.log(response);
+
+
+      setReportes(response.data.data);
+      console.log("reportes:", reportes);
+
+      setFilteredReportes(reportes);
+      console.log("Filtrados: ", filteredReportes);
+      
+    } catch (error) {
+      setError(error);
+      setOpenError(true);
+    }
+  }
+
+  useEffect(() => {
+    fetchData();
   }, []);
-
-  // Filtrar reportes cuando cambia la búsqueda o filtros
-  useEffect(() => {
-    let resultado = [...reportes];
-
-    // Filtrar por búsqueda (cliente, marca, modelo, serie)
-    if (searchTerm) {
-      resultado = resultado.filter(reporte =>
-        reporte.cliente.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        reporte.marca.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        reporte.modelo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        reporte.nSerie.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Filtrar por estado
-    if (filterEstado !== "Todos") {
-      resultado = resultado.filter(reporte => reporte.estado === filterEstado);
-    }
-
-    // Filtrar por tipo
-    if (filterTipo !== "Todos") {
-      resultado = resultado.filter(reporte => reporte.tipo === filterTipo);
-    }
-
-    setFilteredReportes(resultado);
-  }, [searchTerm, filterEstado, filterTipo, reportes]);
-
   // Handlers
   const handleCrearReporte = () => {
     navigate('/crear');
@@ -181,7 +117,7 @@ const Reporte = () => {
   };
 
   const limpiarFiltros = () => {
-    setValue("searchTerm", "");
+    setValue("termBusqueda", "");
     setValue("filterEstado", "Todos");
     setValue("filterTipo", "Todos");
   };
@@ -227,7 +163,7 @@ const Reporte = () => {
           <PiMagnifyingGlassBold className="search-icon-inline" />
           <Input
             type="text"
-            name="searchTerm"
+            name="termBusqueda"
             text="Buscar por cliente, marca, modelo o serie..."
             register={register}
             required={false}
@@ -329,7 +265,7 @@ const Reporte = () => {
                     </span>
                   </td>
                   <td className="td-fecha">{reporte.fechaCreacion}</td>
-                  <td className="td-tecnico">{reporte.tecnico}</td>
+                  <td className="td-tecnico">{reporte.creador}</td>
                   <td className="td-acciones">
                     <div className="acciones-group">
                       <button
