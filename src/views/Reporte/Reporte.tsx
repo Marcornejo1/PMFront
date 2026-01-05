@@ -1,13 +1,14 @@
 import "./Reporte.css";
 import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { PiFileArchiveBold, PiMagnifyingGlassBold, PiPencilBold, PiTrashBold, PiEyeBold, PiFunnelBold, PiDownloadBold } from "react-icons/pi";
 import Button from "../../components/buttons/Button";
 import Input from "../../components/inputs/Input";
 import InputSelect from "../../components/inputs/InputSelect";
 import { TitleContext } from "../../context/TitleContext";
 import useAxiosInstance from "../../functions/axiosInstance";
+import HandleErrors from "../../components/helpers/handleErrors/HandleErrors";
 
 interface ReportesData {
   id: string;
@@ -50,40 +51,57 @@ const Reporte = () => {
     }
   });
 
+  const watchedValues = useWatch({ control });
+
   // Estados
   const [reportes, setReportes] = useState<ReportesData[]>([]);
   const [filteredReportes, setFilteredReportes] = useState<ReportesData[]>([]);
   const [showFilters, setShowFilters] = useState<boolean>(false);
-  const [selectedReporte, setSelectedReporte] = useState<number | null>(null);
-  const [fData, setfData] = useState<FilterData>({ termBusqueda: "", filterEstado: "Todos", filterTipo: "Todos" });
+  const [selectedReporte, setSelectedReporte] = useState<string | null>(null);
   const [openError, setOpenError] = useState<boolean>(false);
   const [error, setError] = useState<any>();
 
   // Cargar reportes (simulados por ahora)
-  const fetchData = async (filterParams?: FilterData): Promise<void> => {
-    //Si se reciben nuevos parámetros sobreescribimos el estado, si no usamos el actual
-    const filterData = filterParams || fData; //Se creó esta variable para usar la información desde el inicio de la función sin esperar a que se actualice el estado
-    const url = `${VITE_BACKEND_URL}/api/reportes?termBusqueda=${filterData.termBusqueda}&filterEstado=${filterData.filterEstado}&filterTipo=${filterData.filterTipo}`;
+  const fetchData = async (): Promise<void> => {
+    const url = `${VITE_BACKEND_URL}/api/reportes`;
     try {
-      //Validamos que cumplan los tipos de datos, al venir de rutas todo es string
-      if (typeof filterData.termBusqueda !== "string" || typeof filterData.filterEstado !== "string" || typeof filterData.filterTipo !== "string")
-        throw new Error("typeError");
-
       const response = await axiosInstance.get(url);
       console.log(response);
 
-
-      setReportes(response.data.data);
-      console.log("reportes:", reportes);
-
-      setFilteredReportes(reportes);
-      console.log("Filtrados: ", filteredReportes);
+      setReportes(response.data);
+      console.log("reportes:", response.data);
       
     } catch (error) {
       setError(error);
       setOpenError(true);
     }
   }
+
+  // Función para filtrar reportes localmente
+  const filterReportes = (reportes: ReportesData[], filters: Partial<FilterData>): ReportesData[] => {
+    return reportes.filter((reporte) => {
+      const term = filters.termBusqueda || "";
+      const matchesTerm = term === "" ||
+        (reporte.cliente && reporte.cliente.toLowerCase().includes(term.toLowerCase())) ||
+        (reporte.marca && reporte.marca.toLowerCase().includes(term.toLowerCase())) ||
+        (reporte.modelo && reporte.modelo.toLowerCase().includes(term.toLowerCase())) ||
+        (reporte.nSerie && reporte.nSerie.toLowerCase().includes(term.toLowerCase()));
+
+      const estado = filters.filterEstado || "Todos";
+      const matchesEstado = estado === "Todos" || reporte.estado === estado;
+
+      const tipo = filters.filterTipo || "Todos";
+      const matchesTipo = tipo === "Todos" || reporte.tipo === tipo;
+
+      return matchesTerm && matchesEstado && matchesTipo;
+    });
+  };
+
+  // Filtrar reportes cuando cambien los filtros o los reportes
+  useEffect(() => {
+    const filtered = filterReportes(reportes, watchedValues);
+    setFilteredReportes(filtered);
+  }, [reportes, watchedValues]);
 
   useEffect(() => {
     fetchData();
@@ -93,17 +111,17 @@ const Reporte = () => {
     navigate('/crear');
   };
 
-  const handleVerReporte = (id: number) => {
+  const handleVerReporte = (id: string) => {
     console.log('Ver reporte:', id);
     // navigate(`/reporte/${id}`);
   };
 
-  const handleEditarReporte = (id: number) => {
+  const handleEditarReporte = (id: string) => {
     console.log('Editar reporte:', id);
     navigate(`/editar/${id}`);
   };
 
-  const handleEliminarReporte = (id: number) => {
+  const handleEliminarReporte = (id: string) => {
     if (window.confirm('¿Está seguro de eliminar este reporte?')) {
       // Aquí harías: await axios.delete(`/api/reportes/${id}`)
       setReportes(reportes.filter(r => r.id !== id));
@@ -111,7 +129,7 @@ const Reporte = () => {
     }
   };
 
-  const handleExportarPDF = (id: number) => {
+  const handleExportarPDF = (id: string) => {
     console.log('Exportar a PDF:', id);
     // Aquí implementarías la lógica de exportación
   };
@@ -328,6 +346,13 @@ const Reporte = () => {
           </div>
         )}
       </div>
+      {openError && (
+        <HandleErrors
+          error={error}
+          handleWarningError={() => setOpenError(false)}
+          handleFatalError={() => setOpenError(false)}
+        />
+      )}
     </div>
   );
 };

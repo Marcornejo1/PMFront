@@ -55,6 +55,9 @@
 
 .search-box-wrapper .field {
   padding-left: 3rem !important;
+  width: 100% !important;
+  background-color: #ffffff !important;
+  border: 1px solid #cccccc !important;
 }
 
 .search-icon-inline {
