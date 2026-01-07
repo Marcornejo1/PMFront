@@ -1,7 +1,7 @@
 import './Dashboard.css';
 import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PiFileArchiveBold, PiCheckCircleBold, PiClockBold, PiPlusBold, PiChartBarBold } from 'react-icons/pi';
+import { PiFileArchiveBold, PiCheckCircleBold, PiClockBold, PiChartBarBold } from 'react-icons/pi';
 import Button from '../../components/buttons/Button';
 import { TitleContext } from '../../context/TitleContext';
 import useAxiosInstance from '../../functions/axiosInstance';

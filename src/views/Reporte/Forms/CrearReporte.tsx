@@ -15,12 +15,15 @@ import Modal from "../../../components/modals/Modal";
 import CorrectoMessage from "../../../components/messages/correcto/CorrectoMessage";
 import { MAYUS_REG_EX, MAYUS_REG_EX_INPUT } from "../../../const/regex";
 import { useAuthContext } from "../../../context/AuthContext";
-const tipoOptions = ["Preventivo", "Correctivo", "Emergencia", "Instalación", "Inspección"];
+
 
 interface Props {
   onCloseComponent: () => void;
   onFinalizeProcess: () => void;
 }
+
+const tipoOptions = ["Preventivo", "Correctivo", "Emergencia", "Instalación", "Inspección"];
+
 
 interface FormData {
   // Información General
@@ -113,7 +116,24 @@ const CrearReporte = ({ onCloseComponent, onFinalizeProcess }: Props) => {
     setIsSaving(true);
     //Logica para guardar el formulario como borrador
     const urlAgregarReporte = `${VITE_BACKEND_URL}/api/reportes`;
-    await axiosInstance.post(urlAgregarReporte, { data, estado: "Borrador", usuarioCreador: authData.username });
+
+    const formData = new FormData();
+    formData.append('data', JSON.stringify(data));
+    formData.append('estado', 'Borrador');
+    formData.append('usuarioCreador', authData.username);
+
+    // Append files if any
+    if (data.referenciaImages && data.referenciaImages.length > 0) {
+      data.referenciaImages.forEach((file: File) => {
+        formData.append('referenciaImages', file);
+      });
+    }
+
+    await axiosInstance.post(urlAgregarReporte, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
 
     //Mostramos el mensaje de confirmacion y regresamos a la vista de reportes
     setOpenModal("success");
@@ -154,9 +174,8 @@ const CrearReporte = ({ onCloseComponent, onFinalizeProcess }: Props) => {
         || typeof SalFNBN !== 'string' || typeof SalFNCN !== 'string' || typeof CorrSalidaA !== 'string' || typeof CorrSalidaB !== 'string' || typeof CorrSalidaC !== 'string') {
         console.log("Error de tipo");
         throw new Error("typeError");
-
-
       }
+
       //Validamos que el número de serie cumpla las expresiones regulares
       if (!MAYUS_REG_EX.test(nSerie)) {
         throw new Error("typeError");
@@ -175,7 +194,24 @@ const CrearReporte = ({ onCloseComponent, onFinalizeProcess }: Props) => {
       } else {
         //Si el estatus es correcto, hacemos la solicitud para enviar los datos
         const urlAgregarReporte = `${VITE_BACKEND_URL}/api/reportes`;
-        await axiosInstance.post(urlAgregarReporte, { data, estado: "Completado", usuarioCreador: authData.username });
+
+        const formData = new FormData();
+        formData.append('data', JSON.stringify(data));
+        formData.append('estado', 'Completado');
+        formData.append('usuarioCreador', authData.username);
+
+        // Agregar archivos si los hay
+        if (referenciaImages && referenciaImages.length > 0) {
+          referenciaImages.forEach((file: File) => {
+            formData.append('referenciaImages', file);
+          });
+        }
+
+        await axiosInstance.post(urlAgregarReporte, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
 
         //Mostramos el mensaje de confirmacion y regresamos a la vista de reportes
         setOpenModal("success");
@@ -190,14 +226,6 @@ const CrearReporte = ({ onCloseComponent, onFinalizeProcess }: Props) => {
 
     }
 
-
-
-    // Aquí harías el POST a tu API
-    // await axios.post('/api/reportes', { ...data, estado: 'Completado' });
-
-    // Limpiar borrador del localStorage
-    localStorage.removeItem('reporteBorrador');
-    setDisabledButton(false);
   };
 
 
@@ -205,11 +233,29 @@ const CrearReporte = ({ onCloseComponent, onFinalizeProcess }: Props) => {
   const createReporte = async () => {
     //Si el estatus es correcto, hacemos la solicitud para enviar los datos
     const urlAgregarReporte = `${VITE_BACKEND_URL}/api/reportes`;
-    await axiosInstance.post(urlAgregarReporte, getValues());
+    const data = getValues();
+
+    const formData = new FormData();
+    formData.append('data', JSON.stringify(data));
+    formData.append('estado', 'Completado');
+    formData.append('usuarioCreador', authData.username);
+
+    // Agregar archivos si los hay
+    if (data.referenciaImages && data.referenciaImages.length > 0) {
+      data.referenciaImages.forEach((file: File) => {
+        formData.append('referenciaImages', file);
+      });
+    }
+
+    await axiosInstance.post(urlAgregarReporte, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
 
     //Mostramos el mensaje de confirmacion y regresamos a la vista de reportes
     setOpenModal("success");
-    navigate("/reportes");
+
   }
 
   //Funcion para dar formato a fechas

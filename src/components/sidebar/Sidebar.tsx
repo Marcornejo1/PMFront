@@ -1,6 +1,6 @@
 import './Sidebar.css';
 import { Link } from 'react-router-dom';
-import { PiFileArchiveBold, PiHouseBold, PiPlusCircleBold } from 'react-icons/pi';
+import { PiFileArchiveBold, PiHouseBold } from 'react-icons/pi';
 
 //Utilizamos react-router para navegar entre las páginas, aquí colocamos las rutas
 interface SidebarProps {
