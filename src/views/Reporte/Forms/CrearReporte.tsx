@@ -88,7 +88,7 @@ const CrearReporte = ({ onCloseComponent, onFinalizeProcess }: Props) => {
   const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 
-  const { register, handleSubmit, setValue, getValues, watch } = useForm<FormData>({ defaultValues: { cliente: "", direccion: "", ciudad: "", encargado: "", marca: "", modelo: "", nSerie: "", tipo: "", referenciaImages: [], EnFFAB: "0", EnFFBC: "0", EnFFCA: "0", EnFNAN: "0", EnFNBN: "0", ENFNCN: "0", CorrA: "0", CorrB: "0", CorrC: "0", SalFFAB: "0", SalFFBC: "0", SalFFCA: "0", SalFNAN: "0", SalFNBN: "0", SalFNCN: "0", CorrSalidaA: "0", CorrSalidaB: "0", CorrSalidaC: "0", FrecEntr: "0", FrecSalid: "0", PorCarga: "0", TenBateria: "0", CorrBateria: "0", TempUPS: "0", ModeloBateria: "-", CantBaterias: "0", AñoFabricacionBaterias: "0000", Observaciones: "-", nombreRealizo: "-", nombreRecibio: "-", fechaRealizado: "1000/01/01", fechaRecibido: "1000/01/01" } });
+  const { register, handleSubmit, setValue, getValues, watch } = useForm<FormData>({ defaultValues: { cliente: "", direccion: "", ciudad: "", encargado: "", marca: "", modelo: "", nSerie: "", tipo: "", referenciaImages: [], EnFFAB: "0", EnFFBC: "0", EnFFCA: "0", EnFNAN: "0", EnFNBN: "0", ENFNCN: "0", CorrA: "0", CorrB: "0", CorrC: "0", SalFFAB: "0", SalFFBC: "0", SalFFCA: "0", SalFNAN: "0", SalFNBN: "0", SalFNCN: "0", CorrSalidaA: "0", CorrSalidaB: "0", CorrSalidaC: "0", FrecEntr: "0", FrecSalid: "0", PorCarga: "0", TenBateria: "0", CorrBateria: "0", TempUPS: "0", ModeloBateria: "", CantBaterias: "0", AñoFabricacionBaterias: "0000", Observaciones: "", nombreRealizo: "", nombreRecibio: "", fechaRealizado: "1000/01/01", fechaRecibido: "1000/01/01" } });
   const watchTipo = watch("tipo");
 
   // Obtener el nombre de usuario logueado
@@ -457,10 +457,10 @@ const CrearReporte = ({ onCloseComponent, onFinalizeProcess }: Props) => {
         );
       case 'error':
         return (
-          <HandleErrors error={error} handleFatalError={() => setOpenModal("form")} handleWarningError={() => setOpenModal("form")} />
+          <HandleErrors error={error} handleFatalError={() => { setOpenModal("form"); setDisabledButton(false); }} handleWarningError={() => { setOpenModal("form"); setDisabledButton(false); }} />
         );
       case 'warning':
-        <WarningAgreementMessage data={warningData} originString={getValues("nSerie")} handleAcceptMessage={createReporte} handleCancelMessage={() => setOpenModal("form")} />
+        <WarningAgreementMessage data={warningData} originString={getValues("nSerie")} handleAcceptMessage={createReporte} handleCancelMessage={() => { setOpenModal("form"); setDisabledButton(false); }} />
     }
   }
 

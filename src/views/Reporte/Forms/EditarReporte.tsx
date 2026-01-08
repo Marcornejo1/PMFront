@@ -83,8 +83,8 @@ interface FormData {
 
 const EditarReporte = ({ onCloseComponent, onFinalizeProcess }: Props) => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate(); 
-  
+  const navigate = useNavigate();
+
 
   //Importamos variables globales
   const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -127,10 +127,12 @@ const EditarReporte = ({ onCloseComponent, onFinalizeProcess }: Props) => {
       ]);
 
       console.log(reporteResponse);
-      
+
       //Colocamos los datos en los campos del formulario
       const reporteData = reporteResponse.data;
       console.log(reporteData);
+      console.log(typeof (reporteData.mediciones.CorrA));
+
 
       setValue("idReporte", reporteData.id);
       setValue("cliente", reporteData.cliente);
@@ -142,39 +144,41 @@ const EditarReporte = ({ onCloseComponent, onFinalizeProcess }: Props) => {
       setValue("nSerie", reporteData.nSerie);
       setValue("tipo", reporteData.tipo);
       //Las imagenes no se cargan puesto que no es posible prellenar un input file por seguridad
-      setValue("EnFFAB", reporteData.mediciones?.EnFFAB || "0");
-      setValue("EnFFBC", reporteData.mediciones?.EnFFBC || "0");
-      setValue("EnFFCA", reporteData.mediciones?.EnFFCA || "0");
-      setValue("EnFNAN", reporteData.mediciones?.EnFNAN || "0");
-      setValue("EnFNBN", reporteData.mediciones?.EnFNBN || "0");
-      setValue("ENFNCN", reporteData.mediciones?.ENFNCN || "0");
-      setValue("CorrA", reporteData.mediciones?.CorrA || "0");
-      setValue("CorrB", reporteData.mediciones?.CorrB || "0");
-      setValue("CorrC", reporteData.mediciones?.CorrC || "0");
-      setValue("SalFFAB", reporteData.mediciones?.SalFFAB || "0");
-      setValue("SalFFBC", reporteData.mediciones?.SalFFBC || "0");
-      setValue("SalFFCA", reporteData.mediciones?.SalFFCA || "0");
-      setValue("SalFNAN", reporteData.mediciones?.SalFNAN || "0");
-      setValue("SalFNBN", reporteData.mediciones?.SalFNBN || "0");
-      setValue("SalFNCN", reporteData.mediciones?.SalFNCN || "0");
-      setValue("CorrSalidaA", reporteData.mediciones?.CorrSalidaA || "0");
-      setValue("CorrSalidaB", reporteData.mediciones?.CorrSalidaB || "0");
-      setValue("CorrSalidaC", reporteData.mediciones?.CorrSalidaC || "0");
-      // Note: FrecEntr, FrecSalid, PorCarga, TenBateria, CorrBateria, TempUPS might be in datosAdicionales or elsewhere
-      setValue("FrecEntr", reporteData.datosAdicionales?.frecuenciaNominal || "0");
-      setValue("FrecSalid", reporteData.datosAdicionales?.frecuenciaNominal || "0"); // Assuming same
-      setValue("PorCarga", "0"); // Not in response
-      setValue("TenBateria", "0"); // Not in response
-      setValue("CorrBateria", "0"); // Not in response
+      setValue("EnFFAB", reporteData.mediciones?.EnFFAB?.toString() || "0");
+      setValue("EnFFBC", reporteData.mediciones?.EnFFBC?.toString() || "0");
+      setValue("EnFFCA", reporteData.mediciones?.EnFFCA?.toString() || "0");
+      setValue("EnFNAN", reporteData.mediciones?.EnFNAN?.toString() || "0");
+      setValue("EnFNBN", reporteData.mediciones?.EnFNBN?.toString() || "0");
+      setValue("ENFNCN", reporteData.mediciones?.ENFNCN?.toString() || "0");
+      setValue("CorrA", reporteData.mediciones?.CorrA?.toString() || "0");
+      setValue("CorrB", reporteData.mediciones?.CorrB?.toString() || "0");
+      setValue("CorrC", reporteData.mediciones?.CorrC?.toString() || "0");
+      setValue("SalFFAB", reporteData.mediciones?.SalFFAB?.toString() || "0");
+      setValue("SalFFBC", reporteData.mediciones?.SalFFBC?.toString() || "0");
+      setValue("SalFFCA", reporteData.mediciones?.SalFFCA?.toString() || "0");
+      setValue("SalFNAN", reporteData.mediciones?.SalFNAN?.toString() || "0");
+      setValue("SalFNBN", reporteData.mediciones?.SalFNBN?.toString() || "0");
+      setValue("SalFNCN", reporteData.mediciones?.SalFNCN?.toString() || "0");
+      setValue("CorrSalidaA", reporteData.mediciones?.CorrSalidaA?.toString() || "0");
+      setValue("CorrSalidaB", reporteData.mediciones?.CorrSalidaB?.toString() || "0");
+      setValue("CorrSalidaC", reporteData.mediciones?.CorrSalidaC?.toString() || "0");
+      setValue("FrecEntr", reporteData.datosAdicionales?.frecuenciaEntrada?.toString() || "0");
+      setValue("FrecSalid", reporteData.datosAdicionales?.frecuenciaSalida?.toString() || "0");
+      setValue("PorCarga", reporteData.datosAdicionales?.porcentajeCarga?.toString() || "0");
+      setValue("TenBateria", reporteData.datosAdicionales?.tensionBateria?.toString() || "0");
+      setValue("CorrBateria", reporteData.datosAdicionales?.corrienteBateria?.toString() || "0");
       setValue("TempUPS", reporteData.datosAdicionales?.temperaturaAmbiente || "0");
-      setValue("ModeloBateria", reporteData.modeloBateria || "-");
+      setValue("ModeloBateria", reporteData.modeloBateria || "");
       setValue("CantBaterias", reporteData.cantidadBaterias?.toString() || "0");
       setValue("AñoFabricacionBaterias", reporteData.anioFabricacionBaterias?.toString() || "0000");
-      setValue("Observaciones", reporteData.observaciones || "-");
-      setValue("nombreRealizo", reporteData.nombreRealizo || "-");
-      setValue("nombreRecibio", reporteData.nombreRecibio || "-");
-      setValue("fechaRealizado", reporteData.fechaRealizo ? reporteData.fechaRealizo.split("T")[0] : "1000/01/01");
-      setValue("fechaRecibido", reporteData.fechaRecibio ? reporteData.fechaRecibio.split("T")[0] : "1000/01/01");
+      setValue("Observaciones", reporteData.observaciones || "");
+      setValue("nombreRealizo", reporteData.nombreRealizo || "");
+      setValue("nombreRecibio", reporteData.nombreRecibio || "");
+      setValue("fechaRealizado", reporteData.fechaRealizo || "1000/01/01");
+      setValue("fechaRecibido", reporteData.fechaRecibio || "1000/01/01");
+
+      console.log(getValues("fechaRealizado"));
+
 
       //Si todo sale bien, mostramos el formulario
       setOpenModal("form");
@@ -262,10 +266,9 @@ const EditarReporte = ({ onCloseComponent, onFinalizeProcess }: Props) => {
       //Validamos que el número de serie cumpla las expresiones regulares
       if (!MAYUS_REG_EX.test(nSerie)) {
         throw new Error("typeError");
-        console.log("error en serie");
       }
       //Enviamos solicitud para encontrar coincidencias con el mismo número de serie
-      const urlFindMatch = `${VITE_BACKEND_URL}/api/reportes/findMatch?numeroSerie=${nSerie}`;
+      const urlFindMatch = `${VITE_BACKEND_URL}/api/reportes/findMatchDiscardId?numeroSerie=${nSerie}&idReporte=${idReporte}`;
       const responseFindMatch = await axiosInstance.get(urlFindMatch);
       console.log(responseFindMatch);
 
@@ -460,9 +463,11 @@ const EditarReporte = ({ onCloseComponent, onFinalizeProcess }: Props) => {
               <div className="form-grid">
                 <Input type="text" name="nombreRealizo" text="Nombre de quien realizó el reporte" required={false} register={register} />
                 <Input type="text" name="nombreRecibio" text="Nombre de quien recibió el reporte" required={false} register={register} />
-                <InputDateField name="fechaRealizado" text="Fecha de realizado" required={false} register={register} setValue={setValue} />
-                <InputDateField name="fechaRecibido" text="Fecha de recibido" required={false} register={register} setValue={setValue} />
+
+                <InputDateField name="fechaRealizado" text="Fecha de realizado" required={false} register={register} setValue={setValue} date={getValues("fechaRealizado")} />
+                <InputDateField name="fechaRecibido" text="Fecha de recibido" required={false} register={register} setValue={setValue} date={getValues("fechaRecibido")} />
               </div>
+
             </div>
 
             <div className="form-section">

@@ -5,6 +5,7 @@ import { PiFileArchiveBold, PiCheckCircleBold, PiClockBold, PiChartBarBold } fro
 import Button from '../../components/buttons/Button';
 import { TitleContext } from '../../context/TitleContext';
 import useAxiosInstance from '../../functions/axiosInstance';
+import HandleErrors from '../../components/helpers/handleErrors/HandleErrors';
 
 interface ReporteReciente {
   id: number;
@@ -168,20 +169,11 @@ useEffect(() => {
                     </span>
                   </div>
                 </div>
-                <div className="draft-item-progress">
-                  <div className="progress-bar">
-                    <div
-                      className="progress-bar-fill"
-                      style={{ width: `${borrador.porcentajeCompletado}%` }}
-                    ></div>
-                  </div>
-                  <span className="progress-text">{borrador.porcentajeCompletado}% completado</span>
-                </div>
                 <Button
                   btnType="button"
                   className="primary"
                   text="Continuar"
-                  onClick={() => navigate('/crear')}
+                  onClick={() =>  navigate(`/editar/${borrador.id}`)}
                 />
               </div>
             ))}
@@ -221,6 +213,15 @@ useEffect(() => {
           )}
         </div>
       </div>
+
+      {/* Manejo de Errores */}
+      {openError && (
+        <HandleErrors
+          error={error}
+          handleWarningError={() => setOpenError(false)}
+          handleFatalError={() => setOpenError(false)}
+        />
+        )}
     </div>
   );
 };

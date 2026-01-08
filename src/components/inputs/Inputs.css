@@ -32,6 +32,10 @@ textarea {
     cursor: auto;
   }
 
+  input[type = "date"].field {
+    cursor: default;
+  }
+
   select.field {
     cursor: pointer;
   }

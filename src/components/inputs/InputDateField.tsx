@@ -1,21 +1,37 @@
 import { UseFormRegister, UseFormSetValue } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./Inputs.css"; // Usa los estilos ya definidos
 import { es } from "date-fns/locale";
+import { parseISO } from "date-fns";
 
 interface Props {
   name: string;
   text: string;
   required?: boolean;
+  date?: string;
   register: UseFormRegister<any>;
   setValue: UseFormSetValue<any>;
+  getValues?: (name: string) => any;
 }
 
-const InputDateField = ({ name, text, required, setValue }: Props) => {
+const InputDateField = ({ name, text, required, setValue, date }: Props) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
+  console.log("fecha: ", date);
+
+  //Si se proporciona la fecha, la convertimos
+  useEffect(() =>{
+    if (date){
+      const parsedDate = parseISO(date);
+      if(!isNaN(parsedDate.getTime())){
+        setSelectedDate(parsedDate);
+        setValue(name, parsedDate);
+      }
+    }
+  }, [date, name, setValue]);
+  
   // Manejador de cambio de fecha
   const handleChange = (date: Date | null) => {
     setSelectedDate(date);

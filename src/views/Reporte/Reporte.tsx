@@ -145,7 +145,6 @@ const Reporte = () => {
     { value: "Todos", label: "Todos" },
     { value: "Completado", label: "Completado" },
     { value: "Borrador", label: "Borrador" },
-    { value: "Pendiente", label: "Pendiente" }
   ];
 
   const tipoOptions = [
