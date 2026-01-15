@@ -2,13 +2,14 @@ import "./Reporte.css";
 import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm, useWatch } from "react-hook-form";
-import { PiFileArchiveBold, PiMagnifyingGlassBold, PiPencilBold, PiTrashBold, PiEyeBold, PiFunnelBold, PiDownloadBold } from "react-icons/pi";
+import { PiFileArchiveBold, PiMagnifyingGlassBold, PiPencilBold, PiTrashBold, PiEyeBold, PiFunnelBold } from "react-icons/pi";
 import Button from "../../components/buttons/Button";
 import Input from "../../components/inputs/Input";
 import InputSelect from "../../components/inputs/InputSelect";
 import { TitleContext } from "../../context/TitleContext";
 import useAxiosInstance from "../../functions/axiosInstance";
 import HandleErrors from "../../components/helpers/handleErrors/HandleErrors";
+import WarningEliminarReporte from "../../components/messages/warning/WarningEliminarReporte";
 
 interface ReportesData {
   id: string;
@@ -304,7 +305,7 @@ const Reporte = () => {
                         className="action-btn action-btn-delete"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleEliminarReporte(reporte.id);
+                          <WarningEliminarReporte id={reporte.id} handleAcceptMessage={() => handleEliminarReporte(reporte.id)} handleCancelMessage={() => {}} />;
                         }}
                         title="Eliminar reporte"
                       >
