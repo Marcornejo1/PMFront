@@ -1,0 +1,33 @@
+.display-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.display-label {
+  font-weight: bold;
+  color: var(--textoPrimario);
+  margin-bottom: 0.5rem;
+}
+
+.display-value {
+  padding: 0.5rem;
+  background-color: var(--neutro);
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+  color: var(--textoPrimario);
+}
+
+.imagenes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.imagen-referencia {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}

@@ -113,7 +113,7 @@ const Reporte = () => {
 
   const handleVerReporte = (id: string) => {
     console.log('Ver reporte:', id);
-    // navigate(`/reporte/${id}`);
+    navigate(`/informacion/${id}`);
   };
 
   const handleEditarReporte = (id: string) => {
@@ -127,11 +127,6 @@ const Reporte = () => {
       setReportes(reportes.filter(r => r.id !== id));
       console.log('Reporte eliminado:', id);
     }
-  };
-
-  const handleExportarPDF = (id: string) => {
-    console.log('Exportar a PDF:', id);
-    // Aquí implementarías la lógica de exportación
   };
 
   const limpiarFiltros = () => {
@@ -304,16 +299,6 @@ const Reporte = () => {
                         title="Editar reporte"
                       >
                         <PiPencilBold />
-                      </button>
-                      <button
-                        className="action-btn action-btn-pdf"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleExportarPDF(reporte.id);
-                        }}
-                        title="Exportar a PDF"
-                      >
-                        <PiDownloadBold />
                       </button>
                       <button
                         className="action-btn action-btn-delete"

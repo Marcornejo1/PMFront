@@ -5,6 +5,35 @@
   min-height: 100vh;
 }
 
+/* Información del Reporte */
+.informacion-reporte {
+  padding: 2rem;
+  background-color: var(--neutro);
+  min-height: 100vh;
+}
+
+.reporte-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.reporte-section h3 {
+  color: var(--colorPrimario);
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--colorPrimario);
+  padding-bottom: 0.5rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
 /* Encabezado */
 .reporte-header {
   display: flex;

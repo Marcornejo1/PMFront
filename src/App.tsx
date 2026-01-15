@@ -9,6 +9,7 @@ import Login from "./views/Login/Login";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoutes from "./components/guards/ProtectedRoutes";
 import EditarReporte from "./views/Reporte/Forms/EditarReporte";
+import InformacionReporte from "./views/Reporte/Informacion/InformacionReporte";
 
 
 const App = () => {
@@ -24,6 +25,7 @@ const App = () => {
             <Route path="/reporte" element={<Reporte />} />
             <Route path="/crear" element={<CrearReporte onCloseComponent={function (): void { throw new Error("Function not implemented."); }} onFinalizeProcess={function (): void { throw new Error("Function not implemented."); }} />} />
             <Route path="/editar/:id" element={<EditarReporte onCloseComponent={function (): void { throw new Error("Function not implemented."); }} onFinalizeProcess={function (): void { throw new Error("Function not implemented."); }} />} />
+            <Route path="/informacion/:id" element={<InformacionReporte />} />
           </Route>
         </Route>
       </Routes>

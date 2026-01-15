@@ -14,9 +14,10 @@ interface Props {
   register: UseFormRegister<any>;
   setValue: UseFormSetValue<any>;
   getValues?: (name: string) => any;
+  disabled?: boolean;
 }
 
-const InputDateField = ({ name, text, required, setValue, date }: Props) => {
+const InputDateField = ({ name, text, required, setValue, date, disabled }: Props) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   console.log("fecha: ", date);
@@ -49,6 +50,7 @@ const InputDateField = ({ name, text, required, setValue, date }: Props) => {
         locale={es}
         placeholderText="Selecciona una fecha"
         required={required}
+        disabled={disabled}
         
       />
     

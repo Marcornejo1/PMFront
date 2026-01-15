@@ -80,7 +80,7 @@ li {
 }
 
 /* Configuraciones responsivas */
-@media (max-width: 1100px) {
+@media (max-width: 768px) {
   .mainFrame {
     margin-left: 5rem;
   }

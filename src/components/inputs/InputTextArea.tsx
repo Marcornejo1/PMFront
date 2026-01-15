@@ -10,13 +10,14 @@ interface Props {
   register: UseFormRegister<any>,
   //Si está este objeto entonces sabemos que debemos convertir las letras en mayúsculas
   toUpperValue?: ToUpperValue,
+  disabled?: boolean,
 }
 
 interface ToUpperValue {
   setValue: UseFormSetValue<any>
 }
 
-const InputTextArea = ({ name, text, required, pattern, register, toUpperValue }: Props) => {
+const InputTextArea = ({ name, text, required, pattern, register, toUpperValue, disabled }: Props) => {
   return (
     <div className="inputRow">
       <label htmlFor={name} className="inputLabel">{text}</label>
@@ -27,6 +28,7 @@ const InputTextArea = ({ name, text, required, pattern, register, toUpperValue }
         autoComplete="off"
         required={required}
         pattern={pattern}
+        disabled={disabled}
         {...register(name, {
           //Función que permite validar si está colocada la propiedad to upper para convertir el texto en mayúsculas
           onChange: (event: React.ChangeEvent<HTMLInputElement>) => {

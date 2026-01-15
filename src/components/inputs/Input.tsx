@@ -15,13 +15,14 @@ interface Props {
   register: UseFormRegister<any>,
   //Si está este objeto entonces sabemos que debemos convertir las letras en mayúsculas
   toUpperValue?: ToUpperValue,
+  disabled?: boolean,
 }
 
 interface ToUpperValue {
   setValue: UseFormSetValue<any>
 }
 
-const Input = ({ type, name, text, min, max, maxLength, minLength, required, pattern, register, toUpperValue }: Props) => {
+const Input = ({ type, name, text, min, max, maxLength, minLength, required, pattern, register, toUpperValue, disabled }: Props) => {
   //funcion para desactivar el scroll en los inputs de tipo number
   const handleWheel = (event: React.WheelEvent<HTMLInputElement>) => {
     const target = event.currentTarget
@@ -46,6 +47,7 @@ const Input = ({ type, name, text, min, max, maxLength, minLength, required, pat
         required={required}
         autoComplete="off"
         onWheel={handleWheel}
+        disabled={disabled}
         {...register(name, {
           onChange: toUpperValue ? (event: React.ChangeEvent<HTMLInputElement>) => {
             toUpperValue.setValue(name, event.currentTarget.value.toUpperCase());
