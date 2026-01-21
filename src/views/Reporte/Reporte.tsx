@@ -71,7 +71,7 @@ const Reporte = () => {
 
       setReportes(response.data);
       console.log("reportes:", response.data);
-      
+
     } catch (error) {
       setError(error);
       setOpenError(true);
@@ -123,11 +123,11 @@ const Reporte = () => {
   };
 
   const handleEliminarReporte = (id: string) => {
-    if (window.confirm('¿Está seguro de eliminar este reporte?')) {
-      // Aquí harías: await axios.delete(`/api/reportes/${id}`)
-      setReportes(reportes.filter(r => r.id !== id));
-      console.log('Reporte eliminado:', id);
-    }
+    //Aqui solo manejaremos la actualizacion de la lista de reportes
+    fetchData();
+    setReportes(reportes.filter(r => r.id !== id));
+    console.log('Reporte eliminado:', id);
+
   };
 
   const limpiarFiltros = () => {
@@ -305,7 +305,7 @@ const Reporte = () => {
                         className="action-btn action-btn-delete"
                         onClick={(e) => {
                           e.stopPropagation();
-                          <WarningEliminarReporte id={reporte.id} handleAcceptMessage={() => handleEliminarReporte(reporte.id)} handleCancelMessage={() => {}} />;
+                          <WarningEliminarReporte id={reporte.id} onCloseComponent={() => { }} onFinalizeProcess={() => { handleEliminarReporte(reporte.id) }} />
                         }}
                         title="Eliminar reporte"
                       >
