@@ -26,7 +26,7 @@ const WarningEliminarReporte = ({ id, onCloseComponent, onFinalizeProcess }: Pro
   //Acciones para eliminar el reporte
   //Proceso para obtener datos
   const fetchData = async (): Promise<void> => {
-    const urlGetReporteData = `${VITE_BACKEND_URL}/reportes/${id}`;
+    const urlGetReporteData = `${VITE_BACKEND_URL}/api/reportes/readById/${id}`;
 
     try {
       //Validamos que se encuentre el id
@@ -48,7 +48,7 @@ const WarningEliminarReporte = ({ id, onCloseComponent, onFinalizeProcess }: Pro
 
   const eliminarReporte = async (idReporte: string): Promise<void> => {
     //Proceso para eliminar el reporte
-    const urlDeleteReporte = `${VITE_BACKEND_URL}/reportes/${idReporte}`;
+    const urlDeleteReporte = `${VITE_BACKEND_URL}/api/reportes/${idReporte}`;
 
     try {
       await axiosInstance.delete(urlDeleteReporte);

@@ -61,6 +61,8 @@ const Reporte = () => {
   const [selectedReporte, setSelectedReporte] = useState<string | null>(null);
   const [openError, setOpenError] = useState<boolean>(false);
   const [error, setError] = useState<any>();
+  const [showWarningEliminar, setShowWarningEliminar] = useState<boolean>(false);
+  const [reporteIdEliminar, setReporteIdEliminar] = useState<string | null>(null);
 
   // Cargar reportes (simulados por ahora)
   const fetchData = async (): Promise<void> => {
@@ -122,12 +124,23 @@ const Reporte = () => {
     navigate(`/editar/${id}`);
   };
 
-  const handleEliminarReporte = (id: string) => {
-    //Aqui solo manejaremos la actualizacion de la lista de reportes
-    fetchData();
-    setReportes(reportes.filter(r => r.id !== id));
-    console.log('Reporte eliminado:', id);
+  const handleAbrirWarning = (id: string) => {
+    setReporteIdEliminar(id);
+    setShowWarningEliminar(true);
+  };
 
+  const handleCerrarWarning = () => {
+    setShowWarningEliminar(false);
+    setReporteIdEliminar(null);
+  };
+
+  const handleEliminarReporte = () => {
+    //Aqui solo manejaremos la actualizacion de la lista de reportes
+    if (reporteIdEliminar) {
+      setReportes(reportes.filter(r => r.id !== reporteIdEliminar));
+      console.log('Reporte eliminado:', reporteIdEliminar);
+      handleCerrarWarning();
+    }
   };
 
   const limpiarFiltros = () => {
@@ -305,7 +318,7 @@ const Reporte = () => {
                         className="action-btn action-btn-delete"
                         onClick={(e) => {
                           e.stopPropagation();
-                          <WarningEliminarReporte id={reporte.id} onCloseComponent={() => { }} onFinalizeProcess={() => { handleEliminarReporte(reporte.id) }} />
+                          handleAbrirWarning(reporte.id);
                         }}
                         title="Eliminar reporte"
                       >
@@ -336,6 +349,13 @@ const Reporte = () => {
           error={error}
           handleWarningError={() => setOpenError(false)}
           handleFatalError={() => setOpenError(false)}
+        />
+      )}
+      {showWarningEliminar && reporteIdEliminar && (
+        <WarningEliminarReporte
+          id={reporteIdEliminar}
+          onCloseComponent={handleCerrarWarning}
+          onFinalizeProcess={handleEliminarReporte}
         />
       )}
     </div>
